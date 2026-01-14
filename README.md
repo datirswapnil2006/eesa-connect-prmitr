@@ -1,73 +1,77 @@
-# Welcome to your Lovable project
+**⚡ EESA Connect**
+🎓 Electronics Engineering Students Association – Official Web Platform
 
-## Project info
+🌐 Official Website
+🔗 https://eesa-prmitr.vercel.app/
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**Project Overview**
 
-## How can I edit this code?
+EESA Connect is the official digital platform of the Electronics Engineering Students Association (EESA).
+It serves as a centralized, scalable, and professional web system designed to facilitate communication, information dissemination, and technical engagement among students, faculty members, and administrators.
+The platform strengthens departmental digital presence, promotes technical culture, and provides a future-ready foundation for academic and professional collaboration.
 
-There are several ways of editing your application.
+**Purpose & Objectives**
 
-**Use Lovable**
+🎓 Establish a professional and unified online identity for EESA
+🤝 Enhance communication within the Electronics Engineering department
+📝 Enable publication of technical content, announcements, and updates
+🧩 Support scalability for future feature expansion
+📱 Ensure responsive and accessible user experience across all devices
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+**✨ Key Features
+🧠 Core Functionality**
 
-Changes made via Lovable will be committed automatically to this repo.
+🏫 Structured informational pages (About, Mission, Vision, Values)
+📰 Blog-ready architecture for technical and departmental content
+👥 Role-oriented system design (Admin / Faculty / Members – extensible)
+📱 Fully responsive and accessible user interface
+⚡ High-performance frontend powered by Vite
 
-**Use your preferred IDE**
+**🔐 Security & Configuration**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+🔑 Environment-based configuration using .env
+🛡️ Secure third-party service integration (Supabase-ready)
+🚫 Sensitive credentials excluded from version control
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**🏗️ System Architecture**
 
-Follow these steps:
+🧱 Modular, component-based frontend architecture
+🧹 Clear separation of concerns for maintainability
+📈 Scalable design to support future enhancements
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+**📁 Project Structure**
+eesa-connect/
+├── public/                 # Static assets
+├── src/
+│   ├── components/         # Reusable UI components
+│   ├── pages/              # Page-level components
+│   ├── lib/                # Utilities and API logic
+│   ├── styles/             # Global styling
+│   ├── App.tsx             # Root application component
+│   └── main.tsx            # Application entry point
+│
+├── tailwind.config.ts      # Tailwind CSS configuration
+├── vite.config.ts          # Vite configuration
+├── tsconfig.json           # TypeScript configuration
+├── .env.example            # Environment variable template
+├── .gitignore
+└── README.md
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+**Installation & Setup**
+ Step 1: Clone the Repository
+ git clone <repository-url>
+cd eesa-connect
+Step 2: Install Dependencies
+npm install
+Step 3: Development Mode
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+**License & Usage**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project is developed exclusively for the Electronics Engineering Students Association (EESA)
+and is intended strictly for educational and organizational purposes.
 
-**Use GitHub Codespaces**
+**👨‍💻 Development Credits**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+🎓 Swapnil Datir
+💡 Ishan Dipte
