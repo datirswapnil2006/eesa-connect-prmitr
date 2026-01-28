@@ -30,6 +30,7 @@ export const getAboutPage = async () => {
   if (error) throw error;
   return data;
 };
+
 /* LATEST BLOGS */
 export const getLatestBlogs = async () => {
   const { data, error } = await supabase
@@ -42,6 +43,7 @@ export const getLatestBlogs = async () => {
   if (error) throw error;
   return data;
 };
+
 /* UPCOMING EVENTS */
 export const getUpcomingEvents = async () => {
   const { data, error } = await supabase
@@ -54,7 +56,8 @@ export const getUpcomingEvents = async () => {
   if (error) throw error;
   return data;
 };
-// ABOUT TEAM
+
+/* ABOUT TEAM */
 export const getAboutTeam = async () => {
   const { data, error } = await supabase
     .from("about_team")
@@ -63,4 +66,35 @@ export const getAboutTeam = async () => {
 
   if (error) throw error;
   return data;
+};
+
+/* MEMBERSHIP SETTINGS */
+export const getMembershipSettings = async () => {
+  const { data, error } = await supabase
+    .from("membership_settings")
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Membership fetch error:", error);
+    return null;
+  }
+
+  return data;
+};
+
+export const updateMembershipSettings = async (
+  enabled: boolean,
+  form_url: string
+) => {
+  const { error } = await supabase
+    .from("membership_settings")
+    .update({
+      enabled,
+      form_url,
+      updated_at: new Date(),
+    })
+    .eq("id", 1);
+
+  if (error) throw error;
 };

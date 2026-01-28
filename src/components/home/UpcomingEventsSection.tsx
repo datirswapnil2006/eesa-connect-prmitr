@@ -77,7 +77,7 @@ const UpcomingEventsSection = () => {
                     {event.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                  <div className="flex flex-wrap gap-4 text-sm text-slate-600 mb-4">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-primary" />
                       {date.toLocaleDateString()}
@@ -91,6 +91,19 @@ const UpcomingEventsSection = () => {
                       {event.location}
                     </div>
                   </div>
+
+                  {/* ✅ REGISTER BUTTON (ONLY IF LINK EXISTS) */}
+                  {event.registration_link && (
+                    <Button asChild size="sm">
+                      <a
+                        href={event.registration_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Register
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </div>
             );

@@ -7,6 +7,7 @@ import {
   Home,
   Info,
   LogOut,
+  Users,
 } from "lucide-react";
 import { supabase } from "@/supabase/client";
 import { Link } from "react-router-dom";
@@ -45,7 +46,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
+
+      {/* HEADER */}
       <div className="bg-white border-b">
         <div className="eesa-container py-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -65,9 +67,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Content */}
+      {/* CONTENT */}
       <div className="eesa-container py-12 space-y-12">
-        {/* Website Content */}
+
+        {/* WEBSITE CONTENT */}
         <div>
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Website Content
@@ -102,12 +105,21 @@ export default function AdminDashboard() {
               link="/admin/add-event"
             />
 
+            {/* ✅ MEMBERSHIP SECTION */}
+            <DashboardCard
+              icon={Users}
+              title="Membership"
+              description="Manage membership form & visibility"
+              link="/admin/membership"
+            />
+
             <DashboardCard
               icon={Image}
               title="Gallery"
               description="Upload and organize gallery images"
               link="/admin/add-gallery"
             />
+
             <DashboardCard
               icon={Image}
               title="Team"
@@ -117,7 +129,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Community */}
+        {/* COMMUNITY */}
         <div>
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Community & Discussions
@@ -132,6 +144,7 @@ export default function AdminDashboard() {
             />
           </div>
         </div>
+
       </div>
     </div>
   );

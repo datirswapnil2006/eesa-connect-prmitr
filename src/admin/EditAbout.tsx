@@ -39,7 +39,7 @@ export default function EditAbout() {
     if (error) {
       alert("Failed to save changes");
     } else {
-      alert("Saved successfully ");
+      alert("Saved successfully");
     }
   };
 
@@ -49,9 +49,15 @@ export default function EditAbout() {
         <h1 className="text-2xl font-bold mb-6">Edit About Page</h1>
 
         {sections.map((section) => (
-          <div key={section.id} className="bg-white border rounded-xl p-6 mb-6">
-            <h2 className="font-semibold mb-2">{section.section_title}</h2>
+          <div
+            key={section.id}
+            className="bg-white border rounded-xl p-6 mb-8 space-y-4"
+          >
+            <h2 className="font-semibold text-lg">
+              {section.section_title}
+            </h2>
 
+            {/* TEXT EDITOR */}
             <textarea
               value={section.content}
               onChange={(e) =>
@@ -67,9 +73,16 @@ export default function EditAbout() {
               className="w-full border rounded-lg p-3 text-sm"
             />
 
+            {/* LIVE PREVIEW (JUSTIFIED) */}
+            <div className="border rounded-lg bg-slate-50 p-4">
+              <p className="text-sm text-slate-700 text-justify leading-relaxed whitespace-pre-line">
+                {section.content}
+              </p>
+            </div>
+
             <Button
               onClick={() => saveSection(section.id, section.content)}
-              className="mt-3 gap-2"
+              className="gap-2"
               disabled={loading}
             >
               <Save className="w-4 h-4" />

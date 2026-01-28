@@ -26,6 +26,7 @@ import AddForum from "./admin/AddForum";
 import EditHome from "./admin/EditHome";
 import EditAbout from "./admin/EditAbout";
 import AdminAddTeam from "./admin/AdminAddTeam";
+import MembershipSettings from "./admin/MembershipSettings";
 
 /* ADMIN GUARD */
 import AdminGuard from "./admin/AdminGuard";
@@ -60,6 +61,16 @@ const App = () => (
             element={
               <AdminGuard>
                 <AdminDashboard />
+              </AdminGuard>
+            }
+          />
+
+          {/* MEMBERSHIP SETTINGS */}
+          <Route
+            path="/admin/membership"
+            element={
+              <AdminGuard>
+                <MembershipSettings />
               </AdminGuard>
             }
           />
@@ -132,7 +143,7 @@ const App = () => (
             }
           />
 
-          {/* TEAM MANAGEMENT (IMAGE + EDIT + DELETE) */}
+          {/* TEAM */}
           <Route
             path="/admin/add-team"
             element={

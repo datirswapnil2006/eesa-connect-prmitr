@@ -12,10 +12,10 @@ export default function HeroSection() {
   if (isLoading || !data) return null;
 
   return (
-    <section className="relative bg-white overflow-hidden text-primary">
+    <section className="relative bg-white overflow-hidden">
       {/* Circuit Pattern Background */}
       <svg
-        className="absolute inset-0 w-full h-full opacity-[0.07] pointer-events-none"
+        className="absolute inset-0 w-full h-full opacity-[0.07] pointer-events-none text-primary"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -40,11 +40,12 @@ export default function HeroSection() {
         <rect width="100%" height="100%" fill="url(#circuit-pattern)" />
       </svg>
 
-      {/* Gradient Glow Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-eesa-teal/10 opacity-60 pointer-events-none" />
+      {/* Soft Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-eesa-teal/10 pointer-events-none" />
 
-      {/* Content */}
+      {/* CONTENT */}
       <div className="relative max-w-7xl mx-auto px-6 py-28 grid lg:grid-cols-2 gap-16 items-center">
+
         {/* LEFT CONTENT */}
         <div>
           {/* Badge */}
@@ -52,17 +53,31 @@ export default function HeroSection() {
             Electronics Engineering Students Association
           </span>
 
-          {/* Hero Title */}
-          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 leading-tight">
-            Building the Future of <span className="text-primary">Electronics Engineering</span>
-          </h1>
+          {/* 🔹 OFFICIAL IDENTITY (AS PER SIR) */}
+          <div className="mb-10">
+            {/* MAIN ASSOCIATION NAME */}
+            <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 leading-tight">
+              Electronics Engineering Students Association{" "}
+              <span className="text-primary">(EESA)</span>
+            </h1>
 
-          {/* Subtitle */}
+            {/* DEPARTMENT */}
+            <h2 className="mt-4 text-2xl md:text-3xl font-semibold text-slate-800">
+              Department of Electronics & Telecommunication Engineering
+            </h2>
+
+            {/* INSTITUTE */}
+            <h3 className="mt-2 text-lg md:text-xl font-medium text-slate-600">
+              Prof. Ram Meghe Institute of Technology & Research
+            </h3>
+          </div>
+
+          {/* SUBTITLE */}
           <p className="mt-6 text-lg text-slate-600 max-w-xl">
             {data.subtitle}
           </p>
 
-          {/* CTA */}
+          {/* CTA BUTTONS */}
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <Link
               to={data.primary_button_link}
@@ -81,7 +96,7 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* RIGHT INTERACTIVE PANEL */}
+        {/* RIGHT INFO CARDS */}
         <div className="hidden lg:grid grid-cols-2 gap-6">
           {[
             {
@@ -107,17 +122,13 @@ export default function HeroSection() {
           ].map((item, i) => (
             <div
               key={i}
-              className="group relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer"
+              className="group relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
             >
-              {/* Hover Glow */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 to-eesa-teal/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
               <item.icon className="w-8 h-8 text-primary mb-4 relative z-10" />
-
               <h3 className="text-lg font-semibold text-slate-900 relative z-10">
                 {item.title}
               </h3>
-
               <p className="mt-2 text-sm text-slate-600 relative z-10">
                 {item.desc}
               </p>
