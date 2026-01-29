@@ -27,6 +27,8 @@ import EditHome from "./admin/EditHome";
 import EditAbout from "./admin/EditAbout";
 import AdminAddTeam from "./admin/AdminAddTeam";
 import MembershipSettings from "./admin/MembershipSettings";
+import ResetPassword from "./admin/ResetPassword";
+
 
 /* ADMIN GUARD */
 import AdminGuard from "./admin/AdminGuard";
@@ -51,6 +53,8 @@ const App = () => (
           <Route path="/forum" element={<Forum />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/admin/reset-password" element={<ResetPassword />} />
+
 
           {/* ADMIN LOGIN */}
           <Route path="/admin/login" element={<AdminLogin />} />
