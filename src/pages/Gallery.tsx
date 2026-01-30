@@ -7,12 +7,17 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Calendar,
+  MapPin,
 } from "lucide-react";
 
 type GalleryItem = {
   id: string;
   title: string;
   image_url: string;
+  event_name: string | null;
+  event_date: string | null;
+  event_location: string | null;
 };
 
 export default function Gallery() {
@@ -37,26 +42,24 @@ export default function Gallery() {
   }, []);
 
   const closeSlider = () => setActiveIndex(null);
-
-  const prevImage = () => {
-    if (activeIndex === null) return;
-    setActiveIndex(activeIndex === 0 ? items.length - 1 : activeIndex - 1);
-  };
-
-  const nextImage = () => {
-    if (activeIndex === null) return;
-    setActiveIndex(activeIndex === items.length - 1 ? 0 : activeIndex + 1);
-  };
+  const prevImage = () =>
+    setActiveIndex((prev) =>
+      prev === null ? null : prev === 0 ? items.length - 1 : prev - 1
+    );
+  const nextImage = () =>
+    setActiveIndex((prev) =>
+      prev === null ? null : prev === items.length - 1 ? 0 : prev + 1
+    );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white">
+    <div className="min-h-screen bg-slate-50">
 
       {/* NAVBAR */}
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-slate-600 hover:text-sky-600 transition font-medium"
+            className="flex items-center gap-2 text-slate-600 hover:text-primary font-medium"
           >
             <ArrowLeft className="w-5 h-5" />
             Back
@@ -64,82 +67,37 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* HEADER */}
-      <section className="relative overflow-hidden bg-white border-b">
-        {/* Soft glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),_transparent_60%)]" />
-
-        <div className="relative max-w-6xl mx-auto px-4 py-24 text-center">
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-sky-100 text-sky-600 text-sm font-semibold mb-6">
-            <ImageIcon className="w-4 h-4" />
-            Memories & Moments
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-sky-500 to-cyan-500 bg-clip-text text-transparent">
-            Gallery
-          </h1>
-
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            A curated glimpse into workshops, events, activities, and memorable
-            moments from the Electronics Engineering Students Association.
-          </p>
-        </div>
-      </section>
-
-      {/* CONTENT */}
+      {/* GRID */}
       <section className="max-w-7xl mx-auto px-4 py-20">
-        {loading && (
-          <p className="text-center text-slate-500 text-lg">
-            Loading gallery…
-          </p>
-        )}
-
-        {!loading && items.length === 0 && (
-          <div className="bg-white border rounded-2xl p-14 text-center text-slate-500 shadow-sm">
-            No gallery images available yet.
+        {loading ? (
+          <p className="text-center text-slate-500">Loading gallery…</p>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            {items.map((item, index) => (
+              <div
+                key={item.id}
+                onClick={() => setActiveIndex(index)}
+                className="cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition"
+              >
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  className="h-72 w-full object-cover"
+                />
+              </div>
+            ))}
           </div>
         )}
-
-        {/* GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              onClick={() => setActiveIndex(index)}
-              className="group relative cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-2xl transition-all duration-300"
-            >
-              {/* Image */}
-              <img
-                src={item.image_url}
-                alt={item.title}
-                className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-              {/* Caption */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform">
-                <p className="text-white font-semibold text-base tracking-wide">
-                  {item.title}
-                </p>
-              </div>
-
-              {/* Hover ring */}
-              <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-sky-400/50 transition-all rounded-3xl" />
-            </div>
-          ))}
-        </div>
       </section>
 
-      {/* MODAL VIEWER */}
+      {/* MODAL */}
       {activeIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
 
           {/* Close */}
           <button
             onClick={closeSlider}
-            className="absolute top-6 right-6 text-white/80 hover:text-white transition"
+            className="absolute top-6 right-6 text-white/80 hover:text-white"
           >
             <X className="w-8 h-8" />
           </button>
@@ -147,29 +105,48 @@ export default function Gallery() {
           {/* Prev */}
           <button
             onClick={prevImage}
-            className="absolute left-6 text-white/70 hover:text-white transition"
+            className="absolute left-6 text-white/70 hover:text-white"
           >
-            <ChevronLeft className="w-12 h-12" />
+            <ChevronLeft className="w-10 h-10" />
           </button>
 
-          {/* Image */}
-          <div className="max-w-6xl w-full px-6 text-center">
+          {/* IMAGE */}
+          <div className="relative max-w-6xl w-full px-6">
             <img
               src={items[activeIndex].image_url}
-              alt={items[activeIndex].title}
-              className="max-h-[80vh] mx-auto rounded-3xl object-contain shadow-2xl"
+              className="max-h-[80vh] w-full object-contain rounded-xl mx-auto"
             />
-            <p className="text-white/80 text-sm mt-6 tracking-wide">
-              {items[activeIndex].title}
-            </p>
+
+            {/* BOTTOM INFO BAR */}
+            <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+              <h3 className="text-lg font-semibold text-white">
+                {items[activeIndex].event_name || items[activeIndex].title}
+              </h3>
+
+              <div className="flex gap-6 mt-2 text-sm text-white/80">
+                {items[activeIndex].event_date && (
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(items[activeIndex].event_date!).toDateString()}
+                  </span>
+                )}
+
+                {items[activeIndex].event_location && (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {items[activeIndex].event_location}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Next */}
           <button
             onClick={nextImage}
-            className="absolute right-6 text-white/70 hover:text-white transition"
+            className="absolute right-6 text-white/70 hover:text-white"
           >
-            <ChevronRight className="w-12 h-12" />
+            <ChevronRight className="w-10 h-10" />
           </button>
         </div>
       )}

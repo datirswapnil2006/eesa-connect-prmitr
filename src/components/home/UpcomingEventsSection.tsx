@@ -92,7 +92,7 @@ const UpcomingEventsSection = () => {
                     </div>
                   </div>
 
-                  {/* ✅ REGISTER BUTTON (ONLY IF LINK EXISTS) */}
+                  {/* REGISTER BUTTON (ONLY IF LINK EXISTS) */}
                   {event.registration_link && (
                     <Button asChild size="sm">
                       <a

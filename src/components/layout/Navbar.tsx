@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getMembershipSettings } from "@/lib/api";
-import { Bot } from "lucide-react";
+
 
 
 const navLinks = [
@@ -95,7 +95,7 @@ const Navbar = () => {
               className="w-11 h-11 md:w-10 md:h-10 object-contain"
             />
             <span className="font-display text-lg md:text-xl tracking-wide">
-              PRMITR
+              PRMIT&R
             </span>
           </div>
 
