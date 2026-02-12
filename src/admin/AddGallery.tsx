@@ -14,56 +14,61 @@ export default function AddGallery() {
   const [error, setError] = useState("");
 
   const uploadImage = async () => {
+    // Basic Validation
     if (!file || !eventName || !eventDate || !eventLocation) {
       setError("Please fill all required fields");
       return;
     }
 
-    if (type === "achievement" && !driveUrl) {
+    // Drive mandatory only for achievement
+    if (type === "achievement" && !driveUrl.trim()) {
       setError("Drive link is required for Student Achievement");
       return;
     }
 
-    setLoading(true);
-    setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-    const filePath = `gallery/${Date.now()}-${file.name}`;
+      const filePath = `gallery/${Date.now()}-${file.name}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("gallery")
-      .upload(filePath, file);
+      // Upload image to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("gallery")
+        .upload(filePath, file);
 
-    if (uploadError) {
-      setError(uploadError.message);
-      setLoading(false);
-      return;
-    }
+      if (uploadError) throw uploadError;
 
-    const { data } = supabase.storage
-      .from("gallery")
-      .getPublicUrl(filePath);
+      // Get public URL
+      const { data } = supabase.storage
+        .from("gallery")
+        .getPublicUrl(filePath);
 
-    const { error: dbError } = await supabase.from("gallery").insert({
-      image_url: data.publicUrl,
-      event_name: eventName,
-      event_date: eventDate,
-      event_location: eventLocation,
-      drive_url: driveUrl || null,
-      type, // "event" | "achievement"
-    });
+      // Insert into database
+      const { error: dbError } = await supabase.from("gallery").insert({
+        image_url: data.publicUrl,
+        event_name: eventName,
+        event_date: eventDate,
+        event_location: eventLocation,
+        drive_url: driveUrl.trim() || null,
+        type,
+      });
 
-    setLoading(false);
+      if (dbError) throw dbError;
 
-    if (dbError) {
-      setError(dbError.message);
-    } else {
-      alert("Gallery item added successfully");
+      alert("Gallery item added successfully ✅");
+
+      // Reset form
       setEventName("");
       setEventDate("");
       setEventLocation("");
       setDriveUrl("");
       setFile(null);
       setType("event");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,10 +83,18 @@ export default function AddGallery() {
           </div>
         )}
 
-        {/* TYPE */}
+        {/* TYPE SELECT */}
         <select
           value={type}
-          onChange={(e) => setType(e.target.value as any)}
+          onChange={(e) => {
+            const selectedType = e.target.value as "event" | "achievement";
+            setType(selectedType);
+
+            // Optional: clear drive link if switching to event
+            if (selectedType === "event") {
+              setDriveUrl("");
+            }
+          }}
           className="w-full border px-3 py-2 rounded mb-4"
         >
           <option value="event">📸 Event</option>
@@ -120,8 +133,8 @@ export default function AddGallery() {
         <input
           placeholder={
             type === "achievement"
-              ? "Google Drive Folder Link (required)"
-              : "Google Drive Folder Link (optional)"
+              ? "Google Drive Folder Link (Required)"
+              : "Google Drive Folder Link (Optional)"
           }
           value={driveUrl}
           onChange={(e) => setDriveUrl(e.target.value)}
@@ -136,10 +149,11 @@ export default function AddGallery() {
           className="w-full mb-4"
         />
 
+        {/* SUBMIT BUTTON */}
         <button
           onClick={uploadImage}
           disabled={loading}
-          className="w-full bg-primary text-white py-2 rounded"
+          className="w-full bg-primary text-white py-2 rounded hover:opacity-90 transition"
         >
           {loading ? "Uploading..." : "Upload"}
         </button>

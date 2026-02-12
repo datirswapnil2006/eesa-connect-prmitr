@@ -12,11 +12,12 @@ import {
 
 type GalleryItem = {
   id: string;
-  title: string;
   image_url: string;
+  event_name: string;
   event_date: string | null;
   event_location: string | null;
   drive_url: string | null;
+  type: "event" | "achievement";
 };
 
 export default function Gallery() {
@@ -29,20 +30,31 @@ export default function Gallery() {
 
   useEffect(() => {
     const fetchGallery = async () => {
-      const { data } = await supabase
+      setLoading(true);
+
+      // Fetch only Events
+      const { data: events, error: eventError } = await supabase
         .from("gallery")
         .select("*")
+        .eq("type", "event")
         .order("created_at", { ascending: false });
 
-      const events = (data || []).filter(
-        (item) => !item.drive_url
-      );
-      const achievements = (data || []).filter(
-        (item) => item.drive_url
-      );
+      // Fetch only Achievements
+      const { data: achievementsData, error: achievementError } =
+        await supabase
+          .from("gallery")
+          .select("*")
+          .eq("type", "achievement")
+          .order("created_at", { ascending: false });
 
-      setEventPhotos(events);
-      setAchievements(achievements);
+      if (eventError || achievementError) {
+        console.error(eventError || achievementError);
+        setLoading(false);
+        return;
+      }
+
+      setEventPhotos(events || []);
+      setAchievements(achievementsData || []);
       setLoading(false);
     };
 
@@ -50,18 +62,27 @@ export default function Gallery() {
   }, []);
 
   const closeSlider = () => setActiveIndex(null);
+
   const prevImage = () =>
     setActiveIndex((prev) =>
-      prev === null ? null : prev === 0 ? eventPhotos.length - 1 : prev - 1
+      prev === null
+        ? null
+        : prev === 0
+        ? eventPhotos.length - 1
+        : prev - 1
     );
+
   const nextImage = () =>
     setActiveIndex((prev) =>
-      prev === null ? null : prev === eventPhotos.length - 1 ? 0 : prev + 1
+      prev === null
+        ? null
+        : prev === eventPhotos.length - 1
+        ? 0
+        : prev + 1
     );
 
   return (
     <div className="min-h-screen bg-slate-50">
-
       {/* NAVBAR */}
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center">
@@ -77,13 +98,17 @@ export default function Gallery() {
 
       <section className="max-w-7xl mx-auto px-4 py-16 space-y-20">
         {loading && (
-          <p className="text-center text-slate-500">Loading gallery…</p>
+          <p className="text-center text-slate-500">
+            Loading gallery…
+          </p>
         )}
 
         {/* EVENT PHOTOS */}
         {!loading && eventPhotos.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold mb-8">📸 Event Photos</h2>
+            <h2 className="text-2xl font-bold mb-8">
+              📸 Event Photos
+            </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {eventPhotos.map((item, index) => (
                 <div
@@ -93,7 +118,7 @@ export default function Gallery() {
                 >
                   <img
                     src={item.image_url}
-                    alt={item.title}
+                    alt={item.event_name}
                     className="h-72 w-full object-cover"
                   />
                 </div>
@@ -105,17 +130,21 @@ export default function Gallery() {
         {/* STUDENT ACHIEVEMENTS */}
         {!loading && achievements.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold mb-8">🏆 Student Achievements</h2>
+            <h2 className="text-2xl font-bold mb-8">
+              🏆 Student Achievements
+            </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {achievements.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => window.open(item.drive_url!, "_blank")}
+                  onClick={() =>
+                    window.open(item.drive_url!, "_blank")
+                  }
                   className="cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition"
                 >
                   <img
                     src={item.image_url}
-                    alt={item.title}
+                    alt={item.event_name}
                     className="h-72 w-full object-cover"
                   />
                 </div>
@@ -125,7 +154,7 @@ export default function Gallery() {
         )}
       </section>
 
-      {/* MODAL FOR EVENT PHOTOS */}
+      {/* EVENT MODAL */}
       {activeIndex !== null && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
           <button
@@ -150,10 +179,10 @@ export default function Gallery() {
 
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
               <h3 className="text-lg font-semibold text-white">
-                {eventPhotos[activeIndex].title}
+                {eventPhotos[activeIndex].event_name}
               </h3>
 
-              <div className="flex gap-6 mt-2 text-sm text-white/80">
+              <div className="flex gap-6 mt-2 text-sm text-white/80 flex-wrap">
                 {eventPhotos[activeIndex].event_date && (
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
@@ -170,6 +199,18 @@ export default function Gallery() {
                   </span>
                 )}
               </div>
+
+              {/* Optional Drive Link for Events */}
+              {eventPhotos[activeIndex].drive_url && (
+                <a
+                  href={eventPhotos[activeIndex].drive_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-4 bg-white text-black px-4 py-2 rounded"
+                >
+                  View More Photos
+                </a>
+              )}
             </div>
           </div>
 
