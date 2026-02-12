@@ -14,13 +14,11 @@ export default function AddGallery() {
   const [error, setError] = useState("");
 
   const uploadImage = async () => {
-    // Basic Validation
     if (!file || !eventName || !eventDate || !eventLocation) {
       setError("Please fill all required fields");
       return;
     }
 
-    // Drive mandatory only for achievement
     if (type === "achievement" && !driveUrl.trim()) {
       setError("Drive link is required for Student Achievement");
       return;
@@ -30,9 +28,13 @@ export default function AddGallery() {
       setLoading(true);
       setError("");
 
+      const selectedType: "event" | "achievement" = type;
+
+      console.log("Saving as type:", selectedType);
+
       const filePath = `gallery/${Date.now()}-${file.name}`;
 
-      // Upload image to Supabase Storage
+      // Upload image to Supabase storage
       const { error: uploadError } = await supabase.storage
         .from("gallery")
         .upload(filePath, file);
@@ -44,19 +46,27 @@ export default function AddGallery() {
         .from("gallery")
         .getPublicUrl(filePath);
 
+      if (!data?.publicUrl) {
+        throw new Error("Failed to get public URL");
+      }
+
       // Insert into database
-      const { error: dbError } = await supabase.from("gallery").insert({
-        image_url: data.publicUrl,
-        event_name: eventName,
-        event_date: eventDate,
-        event_location: eventLocation,
-        drive_url: driveUrl.trim() || null,
-        type,
-      });
+      const { error: dbError } = await supabase
+        .from("gallery")
+        .insert([
+          {
+            image_url: data.publicUrl,
+            event_name: eventName.trim(),
+            event_date: eventDate,
+            event_location: eventLocation.trim(),
+            drive_url: driveUrl.trim() || null,
+            type: selectedType, // 🔥 ONLY dropdown decides section
+          },
+        ]);
 
       if (dbError) throw dbError;
 
-      alert("Gallery item added successfully ✅");
+      alert("Gallery item added successfully");
 
       // Reset form
       setEventName("");
@@ -86,15 +96,9 @@ export default function AddGallery() {
         {/* TYPE SELECT */}
         <select
           value={type}
-          onChange={(e) => {
-            const selectedType = e.target.value as "event" | "achievement";
-            setType(selectedType);
-
-            // Optional: clear drive link if switching to event
-            if (selectedType === "event") {
-              setDriveUrl("");
-            }
-          }}
+          onChange={(e) =>
+            setType(e.target.value as "event" | "achievement")
+          }
           className="w-full border px-3 py-2 rounded mb-4"
         >
           <option value="event">📸 Event</option>

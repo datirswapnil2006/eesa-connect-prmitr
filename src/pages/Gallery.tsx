@@ -32,26 +32,17 @@ export default function Gallery() {
     const fetchGallery = async () => {
       setLoading(true);
 
-      // Fetch only Events
-      const { data: events, error: eventError } = await supabase
+      const { data: events } = await supabase
         .from("gallery")
         .select("*")
         .eq("type", "event")
         .order("created_at", { ascending: false });
 
-      // Fetch only Achievements
-      const { data: achievementsData, error: achievementError } =
-        await supabase
-          .from("gallery")
-          .select("*")
-          .eq("type", "achievement")
-          .order("created_at", { ascending: false });
-
-      if (eventError || achievementError) {
-        console.error(eventError || achievementError);
-        setLoading(false);
-        return;
-      }
+      const { data: achievementsData } = await supabase
+        .from("gallery")
+        .select("*")
+        .eq("type", "achievement")
+        .order("created_at", { ascending: false });
 
       setEventPhotos(events || []);
       setAchievements(achievementsData || []);
@@ -177,40 +168,44 @@ export default function Gallery() {
               className="max-h-[80vh] w-full object-contain rounded-xl mx-auto"
             />
 
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-              <h3 className="text-lg font-semibold text-white">
-                {eventPhotos[activeIndex].event_name}
-              </h3>
+            {/* UPDATED MODAL CONTENT */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-8">
+              <div className="max-w-4xl mx-auto">
 
-              <div className="flex gap-6 mt-2 text-sm text-white/80 flex-wrap">
+                <h3 className="text-2xl font-semibold text-white mb-4">
+                  {eventPhotos[activeIndex].event_name}
+                </h3>
+
+                {/* DATE */}
                 {eventPhotos[activeIndex].event_date && (
-                  <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 text-white/90 mb-2">
                     <Calendar className="w-4 h-4" />
                     {new Date(
                       eventPhotos[activeIndex].event_date!
                     ).toDateString()}
-                  </span>
+                  </div>
                 )}
 
+                {/* LOCATION BELOW DATE */}
                 {eventPhotos[activeIndex].event_location && (
-                  <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 text-white/90 mb-5">
                     <MapPin className="w-4 h-4" />
                     {eventPhotos[activeIndex].event_location}
-                  </span>
+                  </div>
+                )}
+
+                {/* DRIVE BUTTON */}
+                {eventPhotos[activeIndex].drive_url && (
+                  <a
+                    href={eventPhotos[activeIndex].drive_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+                  >
+                    View More Photos
+                  </a>
                 )}
               </div>
-
-              {/* Optional Drive Link for Events */}
-              {eventPhotos[activeIndex].drive_url && (
-                <a
-                  href={eventPhotos[activeIndex].drive_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-4 bg-white text-black px-4 py-2 rounded"
-                >
-                  View More Photos
-                </a>
-              )}
             </div>
           </div>
 
