@@ -12,10 +12,6 @@ import {
 import { supabase } from "@/supabase/client";
 import { Link } from "react-router-dom";
 
-//  logos
-import collegeLogo from "@/public/college-logo.jpg";
-import eesaLogo from "@/public/eesa-logo.jpg";
-
 const DashboardCard = ({
   icon: Icon,
   title,
@@ -55,19 +51,11 @@ export default function AdminDashboard() {
       <div className="bg-white border-b">
         <div className="eesa-container py-6 flex items-center justify-between">
 
-          {/* LEFT SIDE (Logos + Title) */}
+          {/* LEFT SIDE - EESA Logo + Title */}
           <div className="flex items-center gap-4">
-
-            {/* College Logo */}
-            <img
-              src={collegeLogo}
-              alt="College Logo"
-              className="h-10 w-auto object-contain"
-            />
-
             {/* EESA Logo */}
             <img
-              src={eesaLogo}
+              src="/eesa-logo.jpg"
               alt="EESA Logo"
               className="h-10 w-auto object-contain"
             />
@@ -81,14 +69,25 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Logout Button */}
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+          {/* RIGHT SIDE - College Logo + Logout */}
+          <div className="flex items-center gap-6">
+            {/* College Logo */}
+            <img
+              src="/college-logo.jpg"
+              alt="College Logo"
+              className="h-10 w-auto object-contain"
+            />
+
+            {/* Logout Button */}
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
+
         </div>
       </div>
 

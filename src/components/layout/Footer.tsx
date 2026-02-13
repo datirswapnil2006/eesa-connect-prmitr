@@ -43,7 +43,7 @@ const Footer = () => {
               </a>
 
               <a
-                href="https://www.linkedin.com/in/eesa-electronics-engineering-student-association-b7b8073a1/"
+                href="https://www.linkedin.com/in/eesa-electronics-engineering-student-association-b7b8073a1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-lg bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
