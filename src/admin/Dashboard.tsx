@@ -12,6 +12,10 @@ import {
 import { supabase } from "@/supabase/client";
 import { Link } from "react-router-dom";
 
+//  logos
+import collegeLogo from "@/public/college-logo.jpg";
+import eesaLogo from "@/public/eesa-logo.jpg";
+
 const DashboardCard = ({
   icon: Icon,
   title,
@@ -50,13 +54,34 @@ export default function AdminDashboard() {
       {/* HEADER */}
       <div className="bg-white border-b">
         <div className="eesa-container py-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <LayoutDashboard className="w-6 h-6 text-primary" />
-            <h1 className="text-xl font-bold text-slate-900">
-              Admin Dashboard
-            </h1>
+
+          {/* LEFT SIDE (Logos + Title) */}
+          <div className="flex items-center gap-4">
+
+            {/* College Logo */}
+            <img
+              src={collegeLogo}
+              alt="College Logo"
+              className="h-10 w-auto object-contain"
+            />
+
+            {/* EESA Logo */}
+            <img
+              src={eesaLogo}
+              alt="EESA Logo"
+              className="h-10 w-auto object-contain"
+            />
+
+            {/* Dashboard Title */}
+            <div className="flex items-center gap-2">
+              <LayoutDashboard className="w-6 h-6 text-primary" />
+              <h1 className="text-xl font-bold text-slate-900">
+                Admin Dashboard
+              </h1>
+            </div>
           </div>
 
+          {/* Logout Button */}
           <button
             onClick={logout}
             className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800"
@@ -105,7 +130,6 @@ export default function AdminDashboard() {
               link="/admin/add-event"
             />
 
-            {/* ✅ MEMBERSHIP SECTION */}
             <DashboardCard
               icon={Users}
               title="Membership"
