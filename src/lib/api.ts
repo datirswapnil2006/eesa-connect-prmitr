@@ -44,14 +44,36 @@ export const getLatestBlogs = async () => {
   return data;
 };
 
-/* UPCOMING EVENTS */
+/* UPCOMING EVENTS (FIXED) */
 export const getUpcomingEvents = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayString = today.toISOString().split("T")[0];
+
   const { data, error } = await supabase
     .from("events")
     .select("*")
     .eq("is_published", true)
+    .gte("event_date", todayString) // Only today & future
     .order("event_date", { ascending: true })
     .limit(3);
+
+  if (error) throw error;
+  return data;
+};
+
+/*  PAST EVENTS (NEW) */
+export const getPastEvents = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayString = today.toISOString().split("T")[0];
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("is_published", true)
+    .lt("event_date", todayString) 
+    .order("event_date", { ascending: false });
 
   if (error) throw error;
   return data;

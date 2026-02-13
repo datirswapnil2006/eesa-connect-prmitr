@@ -18,6 +18,21 @@ const UpcomingEventsSection = () => {
 
   if (isLoading) return null;
 
+  // Filter out past events
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingEvents = events
+    .filter((event) => {
+      const eventDate = new Date(event.event_date);
+      return eventDate >= today;
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.event_date).getTime() -
+        new Date(b.event_date).getTime()
+    );
+
   return (
     <section className="eesa-section bg-slate-50 border-t border-slate-200">
       <div className="eesa-container">
@@ -43,7 +58,13 @@ const UpcomingEventsSection = () => {
 
         {/* Events */}
         <div className="space-y-6">
-          {events.map((event) => {
+          {upcomingEvents.length === 0 && (
+            <p className="text-slate-500 text-center">
+              No upcoming events at the moment.
+            </p>
+          )}
+
+          {upcomingEvents.map((event) => {
             const date = new Date(event.event_date);
 
             return (
@@ -51,9 +72,11 @@ const UpcomingEventsSection = () => {
                 key={event.id}
                 className="eesa-card p-6 border-l-4 border-primary hover:shadow-lg transition flex flex-col lg:flex-row gap-6"
               >
-                {/* Date */}
+                {/* Date Box */}
                 <div className="w-20 h-20 rounded-xl bg-primary text-white flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold">{date.getDate()}</span>
+                  <span className="text-2xl font-bold">
+                    {date.getDate()}
+                  </span>
                   <span className="text-xs uppercase">
                     {date.toLocaleString("en-US", { month: "short" })}
                   </span>
@@ -82,17 +105,19 @@ const UpcomingEventsSection = () => {
                       <Calendar className="w-4 h-4 text-primary" />
                       {date.toLocaleDateString()}
                     </div>
+
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-primary" />
                       {event.start_time} - {event.end_time}
                     </div>
+
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-primary" />
                       {event.location}
                     </div>
                   </div>
 
-                  {/* REGISTER BUTTON (ONLY IF LINK EXISTS) */}
+                  {/* Register Button */}
                   {event.registration_link && (
                     <Button asChild size="sm">
                       <a

@@ -12,13 +12,13 @@ type Event = {
   location: string;
   type: string;
   registration_link: string | null;
+  event_image: string | null;
 };
 
 export default function AddEvent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
 
-  /* FORM STATE */
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -28,8 +28,9 @@ export default function AddEvent() {
   const [location, setLocation] = useState("");
   const [type, setType] = useState("Workshop");
   const [registrationLink, setRegistrationLink] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(null);
 
-  /* FETCH EVENTS */
   const fetchEvents = async () => {
     const { data } = await supabase
       .from("events")
@@ -43,7 +44,6 @@ export default function AddEvent() {
     fetchEvents();
   }, []);
 
-  /* RESET FORM */
   const resetForm = () => {
     setEditingId(null);
     setTitle("");
@@ -54,9 +54,10 @@ export default function AddEvent() {
     setLocation("");
     setType("Workshop");
     setRegistrationLink("");
+    setImageFile(null);
+    setExistingImage(null);
   };
 
-  /* CREATE / UPDATE EVENT */
   const saveEvent = async () => {
     if (!title || !eventDate) {
       alert("Title and Date are required");
@@ -64,6 +65,29 @@ export default function AddEvent() {
     }
 
     setLoading(true);
+
+    let imageUrl = existingImage;
+
+    //  Upload image if selected
+    if (imageFile) {
+      const filePath = `events/${Date.now()}-${imageFile.name}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("events")
+        .upload(filePath, imageFile);
+
+      if (uploadError) {
+        alert(uploadError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("events")
+        .getPublicUrl(filePath);
+
+      imageUrl = data.publicUrl;
+    }
 
     const payload = {
       title,
@@ -74,6 +98,7 @@ export default function AddEvent() {
       location,
       type,
       registration_link: registrationLink || null,
+      event_image: imageUrl || null,
       is_published: true,
     };
 
@@ -93,7 +118,6 @@ export default function AddEvent() {
     fetchEvents();
   };
 
-  /* LOAD EVENT INTO FORM (EDIT) */
   const editEvent = (event: Event) => {
     setEditingId(event.id);
     setTitle(event.title);
@@ -104,6 +128,7 @@ export default function AddEvent() {
     setLocation(event.location || "");
     setType(event.type || "Workshop");
     setRegistrationLink(event.registration_link || "");
+    setExistingImage(event.event_image || null);
   };
 
   return (
@@ -112,7 +137,7 @@ export default function AddEvent() {
       {/* FORM */}
       <div className="bg-white p-8 rounded-xl border">
         <h1 className="text-2xl font-bold mb-6">
-          {editingId ? "Edit Event" : "Add Upcoming Event"}
+          {editingId ? "Edit Event" : "Add Event"}
         </h1>
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -139,6 +164,29 @@ export default function AddEvent() {
           onChange={(e) => setRegistrationLink(e.target.value)}
         />
 
+        {/* IMAGE UPLOAD */}
+        <div className="mt-4">
+          <label className="block mb-2 text-sm font-medium">
+            Event Banner Image
+          </label>
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setImageFile(e.target.files ? e.target.files[0] : null)
+            }
+          />
+
+          {existingImage && (
+            <img
+              src={existingImage}
+              alt="Existing"
+              className="mt-3 h-32 rounded-lg object-cover"
+            />
+          )}
+        </div>
+
         <div className="flex gap-4 mt-6">
           <button
             onClick={saveEvent}
@@ -161,7 +209,7 @@ export default function AddEvent() {
 
       {/* EVENT LIST */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Upcoming Events</h2>
+        <h2 className="text-xl font-semibold mb-4">All Events</h2>
 
         <div className="space-y-4">
           {events.map((event) => (
@@ -176,10 +224,11 @@ export default function AddEvent() {
                 </p>
                 <p className="text-sm text-slate-600">{event.location}</p>
 
-                {!event.registration_link && (
-                  <p className="text-xs text-orange-600 mt-1">
-                    Registration link not added yet
-                  </p>
+                {event.event_image && (
+                  <img
+                    src={event.event_image}
+                    className="mt-2 h-20 rounded object-cover"
+                  />
                 )}
               </div>
 
