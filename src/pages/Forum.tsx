@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
-import { MessageSquare, ArrowLeft } from "lucide-react";
+import { MessageSquare, ArrowLeft, ExternalLink } from "lucide-react";
 
 type ForumPost = {
   id: string;
   title: string;
   content: string;
   category: string;
+  apply_link: string | null; // ✅ NEW
 };
 
 export default function Forum() {
@@ -53,8 +54,7 @@ export default function Forum() {
             Community Updates
           </div>
 
-
-         <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 animate-slide-up">
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
               Forum Announcements
             </span>
@@ -101,6 +101,19 @@ export default function Forum() {
               <p className="text-slate-700 leading-relaxed mt-3 whitespace-pre-line">
                 {post.content}
               </p>
+
+              {/* Apply Button (Only if Opening) */}
+              {post.apply_link && (
+                <a
+                  href={post.apply_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+                >
+                  Apply Now
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              )}
             </div>
           ))}
         </div>

@@ -5,27 +5,47 @@ export default function AddForum() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("IT");
+  const [isOpening, setIsOpening] = useState(false);
+  const [applyLink, setApplyLink] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = async () => {
-    setLoading(true);
+    if (!title.trim() || !content.trim()) {
+      alert("Please fill all required fields");
+      return;
+    }
 
-    const { error } = await supabase.from("forums").insert({
-      title,
-      content,
-      category,
-    });
+    if (isOpening && !applyLink.trim()) {
+      alert("Please enter Google Form link");
+      return;
+    }
 
-    setLoading(false);
+    try {
+      setLoading(true);
 
-    if (error) {
-      alert("Failed to add announcement");
-      console.error(error);
-    } else {
-      alert("Announcement posted");
+      const { error } = await supabase.from("forums").insert([
+        {
+          title: title.trim(),
+          content: content.trim(),
+          category,
+          apply_link: isOpening ? applyLink.trim() : null,
+        },
+      ]);
+
+      if (error) throw error;
+
+      alert("Announcement posted successfully ");
+
       setTitle("");
       setContent("");
       setCategory("IT");
+      setIsOpening(false);
+      setApplyLink("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to post announcement");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +67,9 @@ export default function AddForum() {
         >
           <option value="IT">IT Forum</option>
           <option value="Core Electronics">Core Electronics Forum</option>
-          <option value="Career Development">Career Development Forum</option>
+          <option value="Career Development">
+            Career Development Forum
+          </option>
         </select>
 
         {/* Title */}
@@ -60,18 +82,41 @@ export default function AddForum() {
 
         {/* Content */}
         <textarea
-          className="w-full border rounded-lg px-3 py-2 mb-6"
+          className="w-full border rounded-lg px-3 py-2 mb-4"
           placeholder="Announcement Content"
           rows={4}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
 
-        {/* Button */}
+        {/* Opening Checkbox */}
+        <div className="flex items-center gap-3 mb-4">
+          <input
+            type="checkbox"
+            checked={isOpening}
+            onChange={() => setIsOpening(!isOpening)}
+            className="w-4 h-4"
+          />
+          <label className="text-sm font-medium">
+            This is an Opening (Enable Applications)
+          </label>
+        </div>
+
+        {/* Google Form Link (Only if Opening) */}
+        {isOpening && (
+          <input
+            className="w-full border rounded-lg px-3 py-2 mb-4"
+            placeholder="Paste Google Form Apply Link"
+            value={applyLink}
+            onChange={(e) => setApplyLink(e.target.value)}
+          />
+        )}
+
+        {/* Submit */}
         <button
           onClick={submit}
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg transition"
         >
           {loading ? "Posting..." : "Post Announcement"}
         </button>
