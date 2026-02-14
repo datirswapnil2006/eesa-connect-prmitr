@@ -18,18 +18,12 @@ type Event = {
   end_time: string;
   location: string;
   registration_link: string | null;
-};
-
-type GalleryItem = {
-  id: string;
-  image_url: string;
-  event_id: string;
+  image_url: string | null; 
 };
 
 export default function Events() {
   const [upcoming, setUpcoming] = useState<Event[]>([]);
   const [past, setPast] = useState<Event[]>([]);
-  const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,32 +34,28 @@ export default function Events() {
         .eq("is_published", true)
         .order("event_date", { ascending: true });
 
-      const { data: images } = await supabase
-        .from("gallery")
-        .select("id,image_url,event_id");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      const now = new Date();
       const upcomingEvents: Event[] = [];
       const pastEvents: Event[] = [];
 
       events?.forEach((event) => {
-        new Date(event.event_date) >= now
+        const eventDate = new Date(event.event_date);
+        eventDate.setHours(0, 0, 0, 0);
+
+        eventDate >= today
           ? upcomingEvents.push(event)
           : pastEvents.push(event);
       });
 
       setUpcoming(upcomingEvents);
-      setPast(pastEvents);
-      setGallery(images || []);
+      setPast(pastEvents.reverse()); // show latest past first
       setLoading(false);
     };
 
     fetchData();
   }, []);
-
-  /* GET IMAGE FOR PAST EVENT */
-  const getEventImage = (eventId: string) =>
-    gallery.find((g) => g.event_id === eventId)?.image_url;
 
   /* DOWNLOAD UPCOMING EVENTS */
   const downloadExcel = () => {
@@ -132,13 +122,23 @@ export default function Events() {
               No upcoming events. Please check past events below.
             </p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {upcoming.map((event) => (
                 <div
                   key={event.id}
                   className="bg-white border rounded-xl p-6 shadow-sm"
                 >
-                  <h3 className="text-xl font-semibold">{event.title}</h3>
+                  {event.image_url && (
+                    <img
+                      src={event.image_url}
+                      alt={event.title}
+                      className="w-full h-56 object-cover rounded-lg mb-4"
+                    />
+                  )}
+
+                  <h3 className="text-xl font-semibold">
+                    {event.title}
+                  </h3>
 
                   <p className="text-slate-600 text-sm mb-2">
                     {event.description}
@@ -188,10 +188,10 @@ export default function Events() {
                   key={event.id}
                   className="bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
                 >
-                  {getEventImage(event.id) ? (
+                  {event.image_url ? (
                     <div className="relative w-full aspect-[16/9] overflow-hidden">
                       <img
-                        src={getEventImage(event.id)}
+                        src={event.image_url}
                         alt={event.title}
                         className="absolute inset-0 w-full h-full object-cover"
                       />
@@ -218,6 +218,7 @@ export default function Events() {
             </div>
           </section>
         )}
+
       </div>
     </div>
   );
