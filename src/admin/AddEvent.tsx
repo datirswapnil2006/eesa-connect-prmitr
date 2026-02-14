@@ -31,6 +31,7 @@ export default function AddEvent() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [existingImage, setExistingImage] = useState<string | null>(null);
 
+  /* FETCH EVENTS */
   const fetchEvents = async () => {
     const { data } = await supabase
       .from("events")
@@ -44,6 +45,7 @@ export default function AddEvent() {
     fetchEvents();
   }, []);
 
+  /* RESET FORM */
   const resetForm = () => {
     setEditingId(null);
     setTitle("");
@@ -58,6 +60,7 @@ export default function AddEvent() {
     setExistingImage(null);
   };
 
+  /* SAVE EVENT */
   const saveEvent = async () => {
     if (!title || !eventDate) {
       alert("Title and Date are required");
@@ -70,10 +73,10 @@ export default function AddEvent() {
 
     //  Upload image if selected
     if (imageFile) {
-      const filePath = `events/${Date.now()}-${imageFile.name}`;
+      const filePath = `${Date.now()}-${imageFile.name}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("events")
+        .from("event-files") 
         .upload(filePath, imageFile);
 
       if (uploadError) {
@@ -83,7 +86,7 @@ export default function AddEvent() {
       }
 
       const { data } = supabase.storage
-        .from("events")
+        .from("event-files") 
         .getPublicUrl(filePath);
 
       imageUrl = data.publicUrl;
@@ -113,11 +116,12 @@ export default function AddEvent() {
       return;
     }
 
-    alert(editingId ? "Event updated" : "Event created");
+    alert(editingId ? "Event updated successfully" : "Event created successfully");
     resetForm();
     fetchEvents();
   };
 
+  /* EDIT EVENT */
   const editEvent = (event: Event) => {
     setEditingId(event.id);
     setTitle(event.title);
@@ -181,7 +185,7 @@ export default function AddEvent() {
           {existingImage && (
             <img
               src={existingImage}
-              alt="Existing"
+              alt="Event"
               className="mt-3 h-32 rounded-lg object-cover"
             />
           )}
