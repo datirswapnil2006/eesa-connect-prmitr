@@ -25,6 +25,8 @@ export default function Gallery() {
   const [achievements, setAchievements] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeAchievement, setActiveAchievement] =
+    useState<GalleryItem | null>(null);
 
   const navigate = useNavigate();
 
@@ -52,7 +54,8 @@ export default function Gallery() {
     fetchGallery();
   }, []);
 
-  const closeSlider = () => setActiveIndex(null);
+  const closeEventSlider = () => setActiveIndex(null);
+  const closeAchievement = () => setActiveAchievement(null);
 
   const prevImage = () =>
     setActiveIndex((prev) =>
@@ -74,6 +77,7 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+
       {/* NAVBAR */}
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center">
@@ -88,6 +92,7 @@ export default function Gallery() {
       </div>
 
       <section className="max-w-7xl mx-auto px-4 py-16 space-y-20">
+
         {loading && (
           <p className="text-center text-slate-500">
             Loading gallery…
@@ -128,9 +133,7 @@ export default function Gallery() {
               {achievements.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() =>
-                    window.open(item.drive_url!, "_blank")
-                  }
+                  onClick={() => setActiveAchievement(item)}
                   className="cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition"
                 >
                   <img
@@ -143,13 +146,14 @@ export default function Gallery() {
             </div>
           </div>
         )}
+
       </section>
 
-      {/* EVENT MODAL */}
+      {/* EVENT MODAL (UNCHANGED) */}
       {activeIndex !== null && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
           <button
-            onClick={closeSlider}
+            onClick={closeEventSlider}
             className="absolute top-6 right-6 text-white/80 hover:text-white"
           >
             <X className="w-8 h-8" />
@@ -168,15 +172,12 @@ export default function Gallery() {
               className="max-h-[80vh] w-full object-contain rounded-xl mx-auto"
             />
 
-            {/* UPDATED MODAL CONTENT */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-8">
               <div className="max-w-4xl mx-auto">
-
                 <h3 className="text-2xl font-semibold text-white mb-4">
                   {eventPhotos[activeIndex].event_name}
                 </h3>
 
-                {/* DATE */}
                 {eventPhotos[activeIndex].event_date && (
                   <div className="flex items-center gap-2 text-white/90 mb-2">
                     <Calendar className="w-4 h-4" />
@@ -186,7 +187,6 @@ export default function Gallery() {
                   </div>
                 )}
 
-                {/* LOCATION BELOW DATE */}
                 {eventPhotos[activeIndex].event_location && (
                   <div className="flex items-center gap-2 text-white/90 mb-5">
                     <MapPin className="w-4 h-4" />
@@ -194,7 +194,6 @@ export default function Gallery() {
                   </div>
                 )}
 
-                {/* DRIVE BUTTON */}
                 {eventPhotos[activeIndex].drive_url && (
                   <a
                     href={eventPhotos[activeIndex].drive_url}
@@ -217,6 +216,61 @@ export default function Gallery() {
           </button>
         </div>
       )}
+
+      {/* ACHIEVEMENT MODAL */}
+      {activeAchievement && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+          <button
+            onClick={closeAchievement}
+            className="absolute top-6 right-6 text-white/80 hover:text-white"
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          <div className="relative max-w-6xl w-full px-6">
+            <img
+              src={activeAchievement.image_url}
+              className="max-h-[80vh] w-full object-contain rounded-xl mx-auto"
+            />
+
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-8">
+              <div className="max-w-4xl mx-auto">
+                <h3 className="text-2xl font-semibold text-white mb-4">
+                  {activeAchievement.event_name}
+                </h3>
+
+                {activeAchievement.event_date && (
+                  <div className="flex items-center gap-2 text-white/90 mb-2">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(
+                      activeAchievement.event_date
+                    ).toDateString()}
+                  </div>
+                )}
+
+                {activeAchievement.event_location && (
+                  <div className="flex items-center gap-2 text-white/90 mb-5">
+                    <MapPin className="w-4 h-4" />
+                    {activeAchievement.event_location}
+                  </div>
+                )}
+
+                {activeAchievement.drive_url && (
+                  <a
+                    href={activeAchievement.drive_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+                  >
+                    View More Details
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
