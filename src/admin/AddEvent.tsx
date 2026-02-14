@@ -12,7 +12,7 @@ type Event = {
   location: string;
   type: string;
   registration_link: string | null;
-  event_image: string | null;
+  image_url: string | null;
 };
 
 export default function AddEvent() {
@@ -70,13 +70,12 @@ export default function AddEvent() {
     setLoading(true);
 
     let imageUrl = existingImage;
-
-    //  Upload image if selected
+//image select
     if (imageFile) {
       const filePath = `${Date.now()}-${imageFile.name}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("event-files") 
+        .from("event-files") // 
         .upload(filePath, imageFile);
 
       if (uploadError) {
@@ -86,7 +85,7 @@ export default function AddEvent() {
       }
 
       const { data } = supabase.storage
-        .from("event-files") 
+        .from("event-files")
         .getPublicUrl(filePath);
 
       imageUrl = data.publicUrl;
@@ -101,7 +100,7 @@ export default function AddEvent() {
       location,
       type,
       registration_link: registrationLink || null,
-      event_image: imageUrl || null,
+      image_url: imageUrl || null,
       is_published: true,
     };
 
@@ -132,7 +131,7 @@ export default function AddEvent() {
     setLocation(event.location || "");
     setType(event.type || "Workshop");
     setRegistrationLink(event.registration_link || "");
-    setExistingImage(event.event_image || null);
+    setExistingImage(event.image_url || null); 
   };
 
   return (
@@ -228,9 +227,9 @@ export default function AddEvent() {
                 </p>
                 <p className="text-sm text-slate-600">{event.location}</p>
 
-                {event.event_image && (
+                {event.image_url && (
                   <img
-                    src={event.event_image}
+                    src={event.image_url}
                     className="mt-2 h-20 rounded object-cover"
                   />
                 )}
