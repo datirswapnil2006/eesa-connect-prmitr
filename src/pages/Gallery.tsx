@@ -133,7 +133,11 @@ export default function Gallery() {
               {achievements.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => setActiveAchievement(item)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setActiveAchievement(item);
+                  }}
                   className="cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition"
                 >
                   <img
@@ -149,7 +153,7 @@ export default function Gallery() {
 
       </section>
 
-      {/* EVENT MODAL (UNCHANGED) */}
+      {/* EVENT MODAL */}
       {activeIndex !== null && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
           <button
@@ -195,14 +199,17 @@ export default function Gallery() {
                 )}
 
                 {eventPhotos[activeIndex].drive_url && (
-                  <a
-                    href={eventPhotos[activeIndex].drive_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      window.open(
+                        eventPhotos[activeIndex].drive_url!,
+                        "_blank"
+                      )
+                    }
                     className="inline-flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
                   >
                     View More Photos
-                  </a>
+                  </button>
                 )}
               </div>
             </div>
@@ -256,14 +263,17 @@ export default function Gallery() {
                 )}
 
                 {activeAchievement.drive_url && (
-                  <a
-                    href={activeAchievement.drive_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      window.open(
+                        activeAchievement.drive_url!,
+                        "_blank"
+                      )
+                    }
                     className="inline-flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
                   >
                     View More Details
-                  </a>
+                  </button>
                 )}
               </div>
             </div>
