@@ -39,24 +39,6 @@ The platform strengthens departmental digital presence, promotes technical cultu
 🧹 Clear separation of concerns for maintainability
 📈 Scalable design to support future enhancements
 
-**📁 Project Structure**
-eesa-connect/
-├── public/                 # Static assets
-├── src/
-│   ├── components/         # Reusable UI components
-│   ├── pages/              # Page-level components
-│   ├── lib/                # Utilities and API logic
-│   ├── styles/             # Global styling
-│   ├── App.tsx             # Root application component
-│   └── main.tsx            # Application entry point
-│
-├── tailwind.config.ts      # Tailwind CSS configuration
-├── vite.config.ts          # Vite configuration
-├── tsconfig.json           # TypeScript configuration
-├── .env.example            # Environment variable template
-├── .gitignore
-└── README.md
-
 **Installation & Setup**
  Step 1: Clone the Repository
  git clone <repository-url>
