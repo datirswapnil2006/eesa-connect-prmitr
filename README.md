@@ -2,7 +2,7 @@
 🎓 Electronics Engineering Students Association – Official Web Platform
 
 🌐 Official Website
-🔗 https://eesa-prmitr.vercel.app/
+🔗 https://eesa-connect-prmitr.vercel.app/
 
 **Project Overview**
 
