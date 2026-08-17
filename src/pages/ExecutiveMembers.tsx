@@ -5,6 +5,8 @@ import {
   Sparkles,
   Layers,
   Search,
+  X,
+  GraduationCap,
 } from "lucide-react";
 import {
   getActiveExecutiveMembers,
@@ -96,43 +98,42 @@ export default function ExecutiveMembers() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-slate-50">
+      <div className="bg-slate-50/60 pb-16">
 
-        {/* HERO SECTION */}
-        <section className="relative py-10 md:py-14 bg-gradient-to-br from-background via-secondary/30 to-background overflow-hidden border-b border-slate-200">
-          <div className="absolute top-0 right-0 -mt-20 -mr-20 w-72 h-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-          <div className="eesa-container max-w-4xl text-center relative">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-3">
+        {/* HERO SECTION - COMPACT & PROFESSIONAL */}
+        <section className="relative py-6 sm:py-8 md:py-10 bg-gradient-to-b from-primary/5 via-secondary/20 to-transparent border-b border-slate-200/80">
+          <div className="eesa-container max-w-4xl text-center relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2.5">
               <Sparkles className="w-3.5 h-3.5" />
               Leadership & Committee
             </span>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
               EESA <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-eesa-teal">Executive Members</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
               Meet the student coordinators and executive committee driving innovation,
               organizing forums, and leading student initiatives at PRMIT&R.
             </p>
           </div>
         </section>
 
-        {/* MAIN CONTENT */}
-        <section className="eesa-container py-6 md:py-8 space-y-6">
+        {/* MAIN CONTENT AREA */}
+        <section className="eesa-container py-4 sm:py-6 space-y-4 sm:space-y-5">
 
           {/* FILTER & SEARCH BAR */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-white p-2.5 sm:p-3 rounded-2xl border border-slate-200/90 shadow-sm">
             
             {/* FORUM FILTER PILLS */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none py-1 flex-1">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scrollbar-none py-0.5 flex-1">
               <button
                 type="button"
                 onClick={() => setSelectedForumId("ALL")}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap flex items-center gap-1.5 flex-shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap flex items-center gap-1.5 flex-shrink-0 ${
                   selectedForumId === "ALL"
-                    ? "bg-primary text-white shadow-sm"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200/80"
+                    ? "bg-primary text-white shadow-sm shadow-primary/25"
+                    : "bg-slate-100/90 text-slate-700 hover:bg-slate-200/80 border border-slate-200/50"
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" />
@@ -161,10 +162,10 @@ export default function ExecutiveMembers() {
                     key={forum.id}
                     type="button"
                     onClick={() => setSelectedForumId(forum.id)}
-                    className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap flex items-center gap-1.5 flex-shrink-0 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap flex items-center gap-1.5 flex-shrink-0 ${
                       isSelected
-                        ? "bg-primary text-white shadow-sm"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200/80"
+                        ? "bg-primary text-white shadow-sm shadow-primary/25"
+                        : "bg-slate-100/90 text-slate-700 hover:bg-slate-200/80 border border-slate-200/50"
                     }`}
                   >
                     <span>{forum.name}</span>
@@ -179,38 +180,48 @@ export default function ExecutiveMembers() {
             </div>
 
             {/* SEARCH BOX */}
-            <div className="relative w-full md:w-64 flex-shrink-0">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <div className="relative w-full md:w-60 flex-shrink-0">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search by name, role..."
+                placeholder="Search name, role..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-xs sm:text-sm transition"
+                className="w-full pl-9 pr-8 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm transition"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
           </div>
 
-          {/* ACTIVE FORUM DESCRIPTION BANNER */}
+          {/* ACTIVE FORUM FILTER NOTIFICATION */}
           {selectedForumId !== "ALL" && (
-            <div className="bg-primary/5 border border-primary/15 rounded-xl p-3 sm:p-3.5 flex items-center justify-between gap-3 animate-in fade-in">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold flex-shrink-0">
-                  <Users className="w-4 h-4" />
+            <div className="bg-primary/5 border border-primary/20 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold flex-shrink-0">
+                  <Users className="w-3.5 h-3.5" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm">
+                <div className="flex items-baseline gap-2">
+                  <h3 className="font-semibold text-slate-900 text-xs sm:text-sm">
                     {forums.find((f) => f.id === selectedForumId)?.name || "Selected Forum"}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Showing all executive coordinators and members assigned to this forum.
-                  </p>
+                  <span className="text-[11px] text-slate-500 hidden sm:inline">
+                    — Showing {filteredMembers.length} assigned {filteredMembers.length === 1 ? "member" : "members"}
+                  </span>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedForumId("ALL")}
-                className="text-xs font-semibold text-primary hover:underline whitespace-nowrap"
+                className="text-xs font-semibold text-primary hover:text-primary/80 hover:underline whitespace-nowrap"
               >
                 Clear Filter
               </button>
@@ -219,39 +230,53 @@ export default function ExecutiveMembers() {
 
           {/* MEMBERS GRID */}
           {loading ? (
-            <div className="min-h-[200px] flex flex-col items-center justify-center gap-3">
+            <div className="min-h-[220px] flex flex-col items-center justify-center gap-3 bg-white rounded-2xl border border-slate-200/80 p-8">
               <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
               <p className="text-xs sm:text-sm text-slate-500 font-medium">Loading Executive Members...</p>
             </div>
           ) : filteredMembers.length === 0 ? (
-            <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 max-w-md mx-auto">
-              <Users className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-              <h3 className="text-base font-bold text-slate-800 mb-1">No Members Found</h3>
-              <p className="text-xs text-muted-foreground">
+            <div className="text-center py-10 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                <Users className="w-6 h-6" />
+              </div>
+              <h3 className="text-sm sm:text-base font-bold text-slate-800 mb-1">No Members Found</h3>
+              <p className="text-xs text-slate-500 mb-4">
                 {searchQuery
                   ? "No executive members match your search query."
                   : "No active executive members have been assigned to this forum yet."}
               </p>
+              {(searchQuery || selectedForumId !== "ALL") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedForumId("ALL");
+                  }}
+                  className="px-3.5 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition"
+                >
+                  Reset Filters
+                </button>
+              )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-4.5">
               {filteredMembers.map((member) => {
                 const forumNames = getMemberForumNames(member);
 
                 return (
                   <div
                     key={member.id}
-                    className="group relative rounded-2xl bg-white border border-slate-200/90 p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between overflow-hidden"
+                    className="group relative rounded-2xl bg-white border border-slate-200/80 hover:border-primary/40 p-4 sm:p-4.5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden"
                   >
                     {/* Top Accent Strip */}
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-eesa-teal opacity-90 group-hover:h-1.5 transition-all" />
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-eesa-teal opacity-80 group-hover:h-1.5 group-hover:opacity-100 transition-all" />
 
-                    <div>
+                    <div className="flex flex-col h-full justify-between">
                       {/* PROFILE PHOTO & BASIC INFO */}
                       <div className="flex flex-col items-center text-center">
-                        <div className="relative mb-3">
+                        <div className="relative mb-2.5 mt-1">
                           {member.photo_url ? (
-                            <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all shadow-sm">
+                            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all shadow-sm">
                               <img
                                 src={member.photo_url}
                                 alt={member.full_name}
@@ -259,19 +284,20 @@ export default function ExecutiveMembers() {
                               />
                             </div>
                           ) : (
-                            <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 text-primary flex items-center justify-center font-bold text-lg ring-2 ring-primary/20 shadow-sm">
+                            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 text-primary flex items-center justify-center font-bold text-base sm:text-lg ring-2 ring-primary/20 shadow-sm">
                               {member.full_name.slice(0, 2).toUpperCase()}
                             </div>
                           )}
 
                           {member.academic_year && (
-                            <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap flex items-center gap-0.5">
+                              <GraduationCap className="w-2.5 h-2.5" />
                               {member.academic_year}
                             </span>
                           )}
                         </div>
 
-                        <h3 className="text-base font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-1">
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-1 mt-1">
                           {member.full_name}
                         </h3>
 
@@ -281,23 +307,20 @@ export default function ExecutiveMembers() {
                       </div>
 
                       {/* ASSIGNED FORUMS BADGES */}
-                      <div className="mt-3 pt-3 border-t border-slate-100">
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center mb-1.5">
-                          Assigned Forums
-                        </div>
+                      <div className="mt-3 pt-2.5 border-t border-slate-100">
                         {forumNames.length > 0 ? (
                           <div className="flex flex-wrap justify-center gap-1">
                             {forumNames.map((name, idx) => (
                               <span
                                 key={idx}
-                                className="text-[11px] font-medium px-2 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/15"
+                                className="text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md bg-primary/5 text-primary border border-primary/15 group-hover:bg-primary/10 transition-colors"
                               >
                                 {name}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-[11px] text-slate-400 text-center italic">
+                          <p className="text-[10px] text-slate-400 text-center italic">
                             Executive Committee
                           </p>
                         )}
@@ -305,8 +328,8 @@ export default function ExecutiveMembers() {
 
                       {/* BIO */}
                       {member.bio && (
-                        <p className="text-xs text-muted-foreground leading-relaxed text-center whitespace-pre-line line-clamp-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 mt-3">
-                          {member.bio}
+                        <p className="text-[11px] text-slate-500 leading-relaxed text-center whitespace-pre-line line-clamp-3 bg-slate-50/80 p-2 rounded-xl border border-slate-100/80 mt-2.5">
+                          "{member.bio}"
                         </p>
                       )}
                     </div>
