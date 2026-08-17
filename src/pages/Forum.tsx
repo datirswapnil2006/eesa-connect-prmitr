@@ -24,7 +24,10 @@ export default function Forum() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      setPosts(data || []);
+      const validPosts = (data || []).filter(
+        (p) => p.title && p.title.trim() && p.content && p.content.trim()
+      );
+      setPosts(validPosts);
       setLoading(false);
     };
 

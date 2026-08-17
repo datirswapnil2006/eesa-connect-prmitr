@@ -152,17 +152,24 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* COMMUNITY */}
+        {/* COMMUNITY & COMMITTEE */}
         <div>
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            Community & Discussions
+            Community & Committee
           </h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <DashboardCard
+              icon={Users}
+              title="Executive Members"
+              description="Manage executive members, forum assignments & visibility"
+              link="/admin/executive-members"
+            />
+
+            <DashboardCard
               icon={MessageSquare}
               title="Forum"
-              description="Moderate discussions & posts"
+              description="Moderate announcements, discussions & posts"
               link="/admin/add-forum"
             />
           </div>

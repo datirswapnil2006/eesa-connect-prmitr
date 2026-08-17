@@ -11,6 +11,7 @@ import Blog from "./pages/Blog";
 import Events from "./pages/Events";
 import Gallery from "./pages/Gallery";
 import Forum from "./pages/Forum";
+import ExecutiveMembers from "./pages/ExecutiveMembers";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ import AddForum from "./admin/AddForum";
 import EditHome from "./admin/EditHome";
 import EditAbout from "./admin/EditAbout";
 import AdminAddTeam from "./admin/AdminAddTeam";
+import AdminExecutiveMembers from "./admin/AdminExecutiveMembers";
 import MembershipSettings from "./admin/MembershipSettings";
 import ResetPassword from "./admin/ResetPassword";
 
@@ -47,6 +49,7 @@ const App = () => (
           {/* PUBLIC ROUTES */}
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
+          <Route path="/executive-members" element={<ExecutiveMembers />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/events" element={<Events />} />
           <Route path="/gallery" element={<Gallery />} />
@@ -65,6 +68,16 @@ const App = () => (
             element={
               <AdminGuard>
                 <AdminDashboard />
+              </AdminGuard>
+            }
+          />
+
+          {/* EXECUTIVE MEMBERS MANAGEMENT */}
+          <Route
+            path="/admin/executive-members"
+            element={
+              <AdminGuard>
+                <AdminExecutiveMembers />
               </AdminGuard>
             }
           />

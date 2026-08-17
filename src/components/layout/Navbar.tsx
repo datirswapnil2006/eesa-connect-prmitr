@@ -9,6 +9,7 @@ import { getMembershipSettings } from "@/lib/api";
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
+  { name: "Executive Members", path: "/executive-members" },
   { name: "Blog", path: "/blog" },
   { name: "Events", path: "/events" },
   { name: "Gallery", path: "/gallery" },

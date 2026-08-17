@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import {
   Target,
@@ -192,6 +193,17 @@ const About = () => {
                   </p>
                 </div>
               ))}
+          </div>
+
+          {/* LINK TO EXECUTIVE MEMBERS & FORUMS */}
+          <div className="mt-16 text-center">
+            <Link
+              to="/executive-members"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
+            >
+              <Users className="w-5 h-5" />
+              <span>View Executive Members & Forum Coordinators</span>
+            </Link>
           </div>
         </div>
       </section>
