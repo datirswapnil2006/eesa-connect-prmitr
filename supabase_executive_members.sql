@@ -93,33 +93,48 @@ ALTER TABLE public.executive_member_forums ENABLE ROW LEVEL SECURITY;
 
 -- 7. RLS Policies for executive_members
 DROP POLICY IF EXISTS "Public read active executive members" ON public.executive_members;
-CREATE POLICY "Public read active executive members"
+DROP POLICY IF EXISTS "Admin manage executive members" ON public.executive_members;
+DROP POLICY IF EXISTS "Allow all for executive_members" ON public.executive_members;
+DROP POLICY IF EXISTS "Allow public read executive_members" ON public.executive_members;
+DROP POLICY IF EXISTS "Allow authenticated executive_members" ON public.executive_members;
+
+-- Policy: Anyone can view executive members
+CREATE POLICY "Allow public read executive_members"
 ON public.executive_members
 FOR SELECT
+TO public
 USING (true);
 
-DROP POLICY IF EXISTS "Admin manage executive members" ON public.executive_members;
-CREATE POLICY "Admin manage executive members"
+-- Policy: Allow authenticated and anon admin insert/update/delete on executive_members
+CREATE POLICY "Allow all for executive_members"
 ON public.executive_members
 FOR ALL
-USING (auth.role() = 'authenticated' OR auth.role() = 'anon')
-WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'anon');
+TO public
+USING (true)
+WITH CHECK (true);
 
 -- 8. RLS Policies for executive_member_forums
 DROP POLICY IF EXISTS "Public read executive member forums" ON public.executive_member_forums;
-CREATE POLICY "Public read executive member forums"
+DROP POLICY IF EXISTS "Admin manage executive member forums" ON public.executive_member_forums;
+DROP POLICY IF EXISTS "Allow all for executive_member_forums" ON public.executive_member_forums;
+DROP POLICY IF EXISTS "Allow public read executive_member_forums" ON public.executive_member_forums;
+
+-- Policy: Anyone can view executive member forums
+CREATE POLICY "Allow public read executive_member_forums"
 ON public.executive_member_forums
 FOR SELECT
+TO public
 USING (true);
 
-DROP POLICY IF EXISTS "Admin manage executive member forums" ON public.executive_member_forums;
-CREATE POLICY "Admin manage executive member forums"
+-- Policy: Allow full manage on executive_member_forums
+CREATE POLICY "Allow all for executive_member_forums"
 ON public.executive_member_forums
 FOR ALL
-USING (auth.role() = 'authenticated' OR auth.role() = 'anon')
-WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'anon');
+TO public
+USING (true)
+WITH CHECK (true);
 
--- 9. Automatic Updated At Trigger (Optional helper)
+-- 9. Automatic Updated At Trigger
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -133,3 +148,33 @@ CREATE TRIGGER update_executive_members_updated_at
     BEFORE UPDATE ON public.executive_members
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+-- 10. Storage Bucket & Policies for team-images
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('team-images', 'team-images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Public team images read access" ON storage.objects;
+CREATE POLICY "Public team images read access"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'team-images');
+
+DROP POLICY IF EXISTS "Allow team images upload" ON storage.objects;
+CREATE POLICY "Allow team images upload"
+ON storage.objects FOR INSERT
+TO public
+WITH CHECK (bucket_id = 'team-images');
+
+DROP POLICY IF EXISTS "Allow team images update" ON storage.objects;
+CREATE POLICY "Allow team images update"
+ON storage.objects FOR UPDATE
+TO public
+USING (bucket_id = 'team-images');
+
+DROP POLICY IF EXISTS "Allow team images delete" ON storage.objects;
+CREATE POLICY "Allow team images delete"
+ON storage.objects FOR DELETE
+TO public
+USING (bucket_id = 'team-images');
+
