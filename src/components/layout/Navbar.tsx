@@ -16,6 +16,7 @@ const navLinks = [
   { name: "Gallery", path: "/gallery" },
   { name: "Forum", path: "/forum" },
 ];
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 type MembershipSettings = {
   enabled: boolean;
@@ -24,19 +25,29 @@ type MembershipSettings = {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [membership, setMembership] = useState<MembershipSettings | null>(null);
+  const [membership, setMembership] = useState<any>(null);
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path;
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Executive Members", path: "/executive-members" },
+    { name: "Alumni", path: "/alumni" },
+    { name: "Blog", path: "/blog" },
+    { name: "Events", path: "/events" },
+    { name: "Gallery", path: "/gallery" },
+    { name: "Forum", path: "/forum" },
+  ];
+
+  const isActive = (path: string) => {
+    if (path === "/" && location.pathname === "/") return true;
+    if (path !== "/" && location.pathname.startsWith(path)) return true;
+    return false;
+  };
 
   useEffect(() => {
     getMembershipSettings().then((data) => {
-      if (data) {
-        setMembership({
-          enabled: data.enabled,
-          form_url: data.form_url,
-        });
-      }
+      setMembership(data);
     });
   }, []);
 
@@ -47,12 +58,14 @@ const Navbar = () => {
 
           {/* LEFT: EESA */}
           <Link to="/" className="flex items-center gap-2 md:gap-3">
-            <img
+            <OptimizedImage
               src="/eesa-logo.jpg"
               alt="EESA Logo"
-              className="w-11 h-11 md:w-10 md:h-10 object-contain"
+              variant="logo"
+              priority={true}
+              containerClassName="w-10 h-10 md:w-11 md:h-11"
             />
-            <span className="font-display text-lg md:text-xl tracking-wide">
+            <span className="font-display text-lg md:text-xl tracking-wide font-bold">
               EESA
             </span>
           </Link>
@@ -66,7 +79,7 @@ const Navbar = () => {
                 className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all
                   ${
                     isActive(link.path)
-                      ? "text-primary bg-primary/10"
+                      ? "text-primary bg-primary/10 font-semibold"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   }`}
               >
@@ -91,12 +104,14 @@ const Navbar = () => {
 
           {/* RIGHT: PRMITR */}
           <div className="flex items-center gap-2 md:gap-3">
-            <img
+            <OptimizedImage
               src="/college-logo.jpg"
               alt="PRMITR Logo"
-              className="w-11 h-11 md:w-10 md:h-10 object-contain"
+              variant="logo"
+              priority={true}
+              containerClassName="w-10 h-10 md:w-11 md:h-11"
             />
-            <span className="font-display text-lg md:text-xl tracking-wide">
+            <span className="font-display text-lg md:text-xl tracking-wide font-bold">
               PRMIT&R
             </span>
           </div>
@@ -124,11 +139,21 @@ const Navbar = () => {
               {/* MOBILE HEADER LOGOS */}
               <div className="flex justify-between px-4 pb-3">
                 <div className="flex items-center gap-2">
-                  <img src="/eesa-logo.jpg" className="w-12 h-12" />
+                  <OptimizedImage
+                    src="/eesa-logo.jpg"
+                    alt="EESA Logo"
+                    variant="logo"
+                    containerClassName="w-10 h-10"
+                  />
                   <span className="font-semibold">EESA</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <img src="/college-logo.jpg" className="w-12 h-12" />
+                  <OptimizedImage
+                    src="/college-logo.jpg"
+                    alt="PRMITR Logo"
+                    variant="logo"
+                    containerClassName="w-10 h-10"
+                  />
                   <span className="font-semibold">PRMITR</span>
                 </div>
               </div>

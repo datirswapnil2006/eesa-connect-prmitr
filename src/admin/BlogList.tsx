@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabase/client";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 export default function BlogList() {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -36,9 +37,11 @@ export default function BlogList() {
             className="bg-white rounded-xl shadow-sm border overflow-hidden"
           >
             {blog.image_url && (
-              <img
+              <OptimizedImage
                 src={blog.image_url}
-                className="h-40 w-full object-cover"
+                alt={blog.title}
+                variant="thumbnail"
+                containerClassName="h-40 w-full"
               />
             )}
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAboutPage, getAboutTeam } from "@/lib/api";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 const values = [
   {
@@ -145,11 +146,13 @@ const About = () => {
                   className="group p-10 rounded-3xl bg-background text-center cursor-pointer hover:shadow-xl transition"
                 >
                   {/* PROFESSIONAL IMAGE */}
-                  <div className="mx-auto mb-6 w-36 h-36 rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/40 transition">
-                    <img
+                  <div className="mx-auto mb-6 flex justify-center">
+                    <OptimizedImage
                       src={person.image_url}
                       alt={person.name}
-                      className="w-full h-full object-cover object-top"
+                      variant="profile"
+                      fallbackText={person.name}
+                      containerClassName="w-36 h-36 rounded-full ring-4 ring-primary/20 group-hover:ring-primary/40 transition shrink-0"
                     />
                   </div>
 
@@ -176,11 +179,13 @@ const About = () => {
                   key={person.id}
                   className="group p-8 rounded-3xl bg-background text-center hover:shadow-lg transition"
                 >
-                  <div className="mx-auto mb-4 w-28 h-28 rounded-full overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/40 transition">
-                    <img
+                  <div className="mx-auto mb-4 flex justify-center">
+                    <OptimizedImage
                       src={person.image_url}
                       alt={person.name}
-                      className="w-full h-full object-cover object-top"
+                      variant="profile"
+                      fallbackText={person.name}
+                      containerClassName="w-28 h-28 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition shrink-0"
                     />
                   </div>
 

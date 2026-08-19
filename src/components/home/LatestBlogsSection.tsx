@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getLatestBlogs } from "@/lib/api";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 const LatestBlogsSection = () => {
   const { data: blogs = [], isLoading } = useQuery({
@@ -40,12 +41,14 @@ const LatestBlogsSection = () => {
           {blogs.map((blog) => (
             <article
               key={blog.id}
-              className="eesa-card h-full flex flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-xl"
+              className="eesa-card h-full flex flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-xl group"
             >
-              <img
+              <OptimizedImage
                 src={blog.image_url}
                 alt={blog.title}
-                className="h-48 w-full object-cover"
+                variant="blog"
+                containerClassName="h-48 w-full"
+                className="group-hover:scale-105 transition-transform duration-500"
               />
 
               <div className="p-6 flex flex-col flex-1">

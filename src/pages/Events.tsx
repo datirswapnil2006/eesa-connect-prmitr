@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import Layout from "@/components/layout/Layout";
 import { supabase } from "@/supabase/client";
 import {
   CalendarDays,
@@ -6,8 +7,12 @@ import {
   Download,
   Clock,
 } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
+import LoadMoreButton from "@/components/common/LoadMoreButton";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+
+const PAST_PAGE_SIZE = 12;
 
 type Event = {
   id: string;
@@ -24,38 +29,79 @@ type Event = {
 export default function Events() {
   const [upcoming, setUpcoming] = useState<Event[]>([]);
   const [past, setPast] = useState<Event[]>([]);
+  const [pastCount, setPastCount] = useState<number | null>(null);
+  const [pastPage, setPastPage] = useState(0);
+  const [pastHasMore, setPastHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [loadingMorePast, setLoadingMorePast] = useState(false);
 
+  // Fetch upcoming events (small dataset, load all)
+  const fetchUpcoming = async () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split("T")[0];
+
+    const { data } = await supabase
+      .from("events")
+      .select("*")
+      .eq("is_published", true)
+      .gte("event_date", todayString)
+      .order("event_date", { ascending: true });
+
+    return (data || []) as Event[];
+  };
+
+  // Fetch a page of past events
+  const fetchPastPage = async (page: number) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split("T")[0];
+
+    const from = page * PAST_PAGE_SIZE;
+    const to = from + PAST_PAGE_SIZE - 1;
+
+    const { data, count } = await supabase
+      .from("events")
+      .select("*", { count: "exact" })
+      .eq("is_published", true)
+      .lt("event_date", todayString)
+      .order("event_date", { ascending: false })
+      .range(from, to);
+
+    return { data: (data || []) as Event[], count };
+  };
+
+  // Initial load
   useEffect(() => {
     const fetchData = async () => {
-      const { data: events } = await supabase
-        .from("events")
-        .select("*")
-        .eq("is_published", true)
-        .order("event_date", { ascending: true });
+      setLoading(true);
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const [upcomingData, pastResult] = await Promise.all([
+        fetchUpcoming(),
+        fetchPastPage(0),
+      ]);
 
-      const upcomingEvents: Event[] = [];
-      const pastEvents: Event[] = [];
-
-      events?.forEach((event) => {
-        const eventDate = new Date(event.event_date);
-        eventDate.setHours(0, 0, 0, 0);
-
-        eventDate >= today
-          ? upcomingEvents.push(event)
-          : pastEvents.push(event);
-      });
-
-      setUpcoming(upcomingEvents);
-      setPast(pastEvents.reverse()); // show latest past first
+      setUpcoming(upcomingData);
+      setPast(pastResult.data);
+      setPastCount(pastResult.count);
+      setPastHasMore(pastResult.data.length >= PAST_PAGE_SIZE);
+      setPastPage(1);
       setLoading(false);
     };
 
     fetchData();
   }, []);
+
+  // Load more past events
+  const loadMorePast = useCallback(async () => {
+    if (loadingMorePast || !pastHasMore) return;
+    setLoadingMorePast(true);
+    const result = await fetchPastPage(pastPage);
+    setPast((prev) => [...prev, ...result.data]);
+    setPastHasMore(result.data.length >= PAST_PAGE_SIZE);
+    setPastPage((p) => p + 1);
+    setLoadingMorePast(false);
+  }, [pastPage, pastHasMore, loadingMorePast]);
 
   /* DOWNLOAD UPCOMING EVENTS */
   const downloadExcel = () => {
@@ -129,10 +175,11 @@ export default function Events() {
                   className="bg-white border rounded-xl p-6 shadow-sm"
                 >
                   {event.image_url && (
-                    <img
+                    <OptimizedImage
                       src={event.image_url}
                       alt={event.title}
-                      className="w-full h-56 object-cover rounded-lg mb-4"
+                      variant="event"
+                      containerClassName="w-full h-56 rounded-lg mb-4"
                     />
                   )}
 
@@ -178,7 +225,7 @@ export default function Events() {
         </section>
 
         {/* PAST EVENTS */}
-        {past.length > 0 && (
+        {!loading && past.length > 0 && (
           <section>
             <h2 className="text-2xl font-semibold mb-6">Past Events</h2>
 
@@ -188,19 +235,12 @@ export default function Events() {
                   key={event.id}
                   className="bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
                 >
-                  {event.image_url ? (
-                    <div className="relative w-full aspect-[16/9] overflow-hidden">
-                      <img
-                        src={event.image_url}
-                        alt={event.title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-full aspect-[16/9] bg-slate-100 flex items-center justify-center text-slate-400 text-sm">
-                      No Image Available
-                    </div>
-                  )}
+                  <OptimizedImage
+                    src={event.image_url}
+                    alt={event.title}
+                    variant="thumbnail"
+                    containerClassName="w-full aspect-[16/9]"
+                  />
 
                   <div className="p-4">
                     <h3 className="font-semibold text-slate-900">
@@ -216,6 +256,15 @@ export default function Events() {
                 </div>
               ))}
             </div>
+
+            <LoadMoreButton
+              onClick={loadMorePast}
+              loading={loadingMorePast}
+              hasMore={pastHasMore}
+              loadedCount={past.length}
+              totalCount={pastCount}
+              label="Load More Past Events"
+            />
           </section>
         )}
 

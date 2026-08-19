@@ -8,6 +8,7 @@ import {
   X,
   GraduationCap,
 } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   getActiveExecutiveMembers,
   getAllForums,
@@ -274,23 +275,18 @@ export default function ExecutiveMembers() {
                     <div className="flex flex-col h-full justify-between">
                       {/* PROFILE PHOTO & BASIC INFO */}
                       <div className="flex flex-col items-center text-center">
-                        <div className="relative mb-2.5 mt-1">
-                          {member.photo_url ? (
-                            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full overflow-hidden ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all shadow-sm">
-                              <img
-                                src={member.photo_url}
-                                alt={member.full_name}
-                                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 text-primary flex items-center justify-center font-bold text-base sm:text-lg ring-2 ring-primary/20 shadow-sm">
-                              {member.full_name.slice(0, 2).toUpperCase()}
-                            </div>
-                          )}
+                        <div className="relative mb-2.5 mt-1 flex justify-center">
+                          <OptimizedImage
+                            src={member.photo_url}
+                            alt={member.full_name}
+                            variant="profile"
+                            fallbackText={member.full_name}
+                            containerClassName="w-24 h-24 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all shadow-sm"
+                            className="group-hover:scale-105 transition-transform duration-500"
+                          />
 
                           {member.academic_year && (
-                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap flex items-center gap-0.5">
+                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap flex items-center gap-0.5 z-10">
                               <GraduationCap className="w-2.5 h-2.5" />
                               {member.academic_year}
                             </span>

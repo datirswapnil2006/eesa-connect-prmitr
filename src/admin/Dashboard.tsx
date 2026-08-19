@@ -1,17 +1,19 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  FileText,
   CalendarDays,
   Image,
-  MessageSquare,
+  FileText,
+  Users,
+  LogOut,
+  GraduationCap,
+  LayoutDashboard,
   Home,
   Info,
-  LogOut,
-  Users,
-  GraduationCap,
+  MessageSquare,
 } from "lucide-react";
 import { supabase } from "@/supabase/client";
-import { Link } from "react-router-dom";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 const DashboardCard = ({
   icon: Icon,
@@ -40,9 +42,11 @@ const DashboardCard = ({
 );
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+
   const logout = async () => {
     await supabase.auth.signOut();
-    window.location.href = "/admin/login";
+    navigate("/admin/login");
   };
 
   return (
@@ -55,10 +59,11 @@ export default function AdminDashboard() {
           {/* LEFT SIDE - EESA Logo + Title */}
           <div className="flex items-center gap-4">
             {/* EESA Logo */}
-            <img
+            <OptimizedImage
               src="/eesa-logo.jpg"
               alt="EESA Logo"
-              className="h-10 w-auto object-contain"
+              variant="logo"
+              containerClassName="h-10 w-auto"
             />
 
             {/* Dashboard Title */}
@@ -73,10 +78,11 @@ export default function AdminDashboard() {
           {/* RIGHT SIDE - College Logo + Logout */}
           <div className="flex items-center gap-6">
             {/* College Logo */}
-            <img
+            <OptimizedImage
               src="/college-logo.jpg"
               alt="College Logo"
-              className="h-10 w-auto object-contain"
+              variant="logo"
+              containerClassName="h-10 w-auto"
             />
 
             {/* Logout Button */}

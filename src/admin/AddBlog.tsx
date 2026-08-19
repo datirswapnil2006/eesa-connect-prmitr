@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { supabase } from "@/supabase/client";
-import { Upload, Image as ImageIcon } from "lucide-react";
+import { uploadBlogImage } from "@/lib/uploadImage";
+import { ArrowLeft, Upload, Image as ImageIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 export default function AddBlog() {
   // Form states
@@ -168,10 +171,11 @@ export default function AddBlog() {
               </label>
 
               {preview ? (
-                <img
+                <OptimizedImage
                   src={preview}
                   alt="Preview"
-                  className="h-20 w-32 object-cover rounded-lg border"
+                  variant="thumbnail"
+                  containerClassName="h-20 w-32 rounded-lg border"
                 />
               ) : (
                 <div className="flex items-center gap-2 text-slate-400">

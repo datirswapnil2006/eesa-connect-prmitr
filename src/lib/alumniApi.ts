@@ -163,6 +163,96 @@ export const getPublicAlumni = async (
 };
 
 /**
+ * Paginated version of getPublicAlumni for the directory.
+ * Selects only the columns needed for card display and uses .range() for pagination.
+ * Returns { data, count } where count is the total matching records.
+ */
+export const getPublicAlumniPaginated = async (
+  filters?: AlumniFilterOptions,
+  page: number = 0,
+  pageSize: number = 16
+): Promise<{ data: AlumniProfile[]; count: number | null }> => {
+  try {
+    const from = page * pageSize;
+    const to = from + pageSize - 1;
+
+    let query = supabase
+      .from("alumni_profiles")
+      .select(
+        `id, user_id, full_name, graduation_year, academic_year, department,
+         company, designation, industry, location, bio, skills,
+         profile_photo_url, linkedin_url, mentorship_available,
+         career_guidance_available, internship_support, job_referral_support,
+         status, is_active, created_at, updated_at`,
+        { count: "exact" }
+      )
+      .eq("status", "approved")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (filters?.department && filters.department !== "all") {
+      query = query.eq("department", filters.department);
+    }
+
+    if (filters?.graduation_year) {
+      query = query.eq("graduation_year", filters.graduation_year);
+    }
+
+    if (filters?.industry && filters.industry !== "all") {
+      query = query.eq("industry", filters.industry);
+    }
+
+    if (filters?.company) {
+      query = query.ilike("company", `%${filters.company}%`);
+    }
+
+    if (filters?.mentorship_available) {
+      query = query.eq("mentorship_available", true);
+    }
+
+    if (filters?.career_guidance_available) {
+      query = query.eq("career_guidance_available", true);
+    }
+
+    if (filters?.internship_support) {
+      query = query.eq("internship_support", true);
+    }
+
+    if (filters?.job_referral_support) {
+      query = query.eq("job_referral_support", true);
+    }
+
+    // Apply pagination range
+    query = query.range(from, to);
+
+    const { data, error, count } = await query;
+    if (error) throw error;
+
+    let result = (data || []) as AlumniProfile[];
+
+    // In-memory multi-field text search (applied after pagination for UX consistency)
+    if (filters?.search && filters.search.trim()) {
+      const term = filters.search.toLowerCase().trim();
+      result = result.filter(
+        (a) =>
+          a.full_name?.toLowerCase().includes(term) ||
+          a.company?.toLowerCase().includes(term) ||
+          a.designation?.toLowerCase().includes(term) ||
+          a.location?.toLowerCase().includes(term) ||
+          a.industry?.toLowerCase().includes(term) ||
+          a.bio?.toLowerCase().includes(term) ||
+          a.skills?.some((s) => s.toLowerCase().includes(term))
+      );
+    }
+
+    return { data: result, count };
+  } catch (err) {
+    console.error("Error fetching paginated public alumni:", err);
+    return { data: [], count: null };
+  }
+};
+
+/**
  * Fetch all alumni for the Admin Dashboard (pending, approved, rejected)
  */
 export const getAllAlumniAdmin = async (

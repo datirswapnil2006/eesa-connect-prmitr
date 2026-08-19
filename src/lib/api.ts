@@ -62,21 +62,25 @@ export const getUpcomingEvents = async () => {
   return data;
 };
 
-/*  PAST EVENTS (NEW) */
-export const getPastEvents = async () => {
+/*  PAST EVENTS (with pagination) */
+export const getPastEvents = async (
+  limit: number = 12,
+  offset: number = 0
+): Promise<{ data: any[]; count: number | null }> => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayString = today.toISOString().split("T")[0];
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("events")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("is_published", true)
     .lt("event_date", todayString) 
-    .order("event_date", { ascending: false });
+    .order("event_date", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) throw error;
-  return data;
+  return { data: data || [], count };
 };
 
 /* ABOUT TEAM */

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabase/client";
 import { uploadTeamImage } from "@/lib/uploadImage";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 type TeamMember = {
   id: string;
@@ -183,9 +184,11 @@ export default function AdminAddTeam() {
 
           {preview && (
             <div className="md:col-span-2 flex items-center gap-4">
-              <img
+              <OptimizedImage
                 src={preview}
-                className="w-20 h-20 rounded-full object-cover border-2 border-primary"
+                alt="Preview"
+                variant="profile"
+                containerClassName="w-20 h-20 rounded-full border-2 border-primary"
               />
               <span className="text-sm text-slate-500">
                 Image preview
@@ -253,10 +256,12 @@ export default function AdminAddTeam() {
                 <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-primary to-eesa-teal rounded-t-3xl" />
 
                 <div className="flex items-center gap-4 mb-4">
-                  <img
+                  <OptimizedImage
                     src={person.image_url}
                     alt={person.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
+                    variant="profile"
+                    fallbackText={person.name}
+                    containerClassName="w-16 h-16 rounded-full border-2 border-primary/30 shrink-0"
                   />
 
                   <div>

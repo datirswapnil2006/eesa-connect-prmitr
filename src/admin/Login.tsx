@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { supabase } from "../supabase/client";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/supabase/client";
+import { Lock, Mail, ArrowLeft } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
-export default function AdminLogin() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 
-  const login = async () => {
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     setErrorMsg("");
-    setSuccessMsg("");
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -21,19 +27,14 @@ export default function AdminLogin() {
     setLoading(false);
 
     if (error) {
-      setErrorMsg("Invalid email or password");
+      setErrorMsg(error.message);
     } else {
-      window.location.href = "/admin/dashboard";
+      navigate("/admin/dashboard");
     }
   };
 
-  // ✅ FIXED FORGOT PASSWORD
-  const forgotPassword = async () => {
-    if (!email) {
-      setErrorMsg("Please enter your email first");
-      return;
-    }
-
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
@@ -45,7 +46,7 @@ export default function AdminLogin() {
     setLoading(false);
 
     if (error) {
-      setErrorMsg("Failed to send reset email");
+      setErrorMsg(error.message);
     } else {
       setSuccessMsg(
         "Password reset email sent. Please check your inbox."
@@ -59,15 +60,19 @@ export default function AdminLogin() {
 
         {/* LOGOS */}
         <div className="flex items-center justify-center gap-6 mb-6">
-          <img
+          <OptimizedImage
             src="/eesa-logo.jpg"
             alt="EESA Logo"
-            className="h-14 object-contain"
+            variant="logo"
+            priority={true}
+            containerClassName="w-14 h-14"
           />
-          <img
+          <OptimizedImage
             src="/college-logo.jpg"
             alt="PRMITR Logo"
-            className="h-14 object-contain"
+            variant="logo"
+            priority={true}
+            containerClassName="w-14 h-14"
           />
         </div>
 
@@ -129,7 +134,8 @@ export default function AdminLogin() {
         {/* FORGOT PASSWORD */}
         <div className="text-right mb-6">
           <button
-            onClick={forgotPassword}
+            type="button"
+            onClick={handleForgotPassword}
             disabled={loading}
             className="text-sm text-blue-600 hover:underline"
           >
@@ -139,7 +145,8 @@ export default function AdminLogin() {
 
         {/* LOGIN BUTTON */}
         <button
-          onClick={login}
+          type="button"
+          onClick={handleLogin}
           disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition disabled:opacity-50"
         >

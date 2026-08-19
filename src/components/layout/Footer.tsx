@@ -6,6 +6,7 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 const Footer = () => {
   return (
@@ -16,10 +17,12 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 group">
-              <img
+              <OptimizedImage
                 src="/eesa-logo.jpg"
                 alt="EESA logo"
-                className="w-10 h-10 object-contain rounded-md group-hover:scale-105 transition-transform"
+                variant="logo"
+                containerClassName="w-10 h-10 rounded-md overflow-hidden"
+                className="group-hover:scale-105 transition-transform"
               />
               <span className="font-display  text-xl tracking-wide text-background">
                 EESA

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 import {
@@ -9,6 +9,10 @@ import {
   Calendar,
   MapPin,
 } from "lucide-react";
+import { getGalleryThumbnail } from "@/lib/imageUtils";
+import LoadMoreButton from "@/components/common/LoadMoreButton";
+
+const PAGE_SIZE = 12;
 
 type GalleryItem = {
   id: string;
@@ -21,38 +25,92 @@ type GalleryItem = {
 };
 
 export default function Gallery() {
+  // Event photos state
   const [eventPhotos, setEventPhotos] = useState<GalleryItem[]>([]);
+  const [eventCount, setEventCount] = useState<number | null>(null);
+  const [eventPage, setEventPage] = useState(0);
+  const [eventHasMore, setEventHasMore] = useState(true);
+
+  // Achievements state
   const [achievements, setAchievements] = useState<GalleryItem[]>([]);
+  const [achieveCount, setAchieveCount] = useState<number | null>(null);
+  const [achievePage, setAchievePage] = useState(0);
+  const [achieveHasMore, setAchieveHasMore] = useState(true);
+
   const [loading, setLoading] = useState(true);
+  const [loadingMoreEvents, setLoadingMoreEvents] = useState(false);
+  const [loadingMoreAchieve, setLoadingMoreAchieve] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [activeAchievement, setActiveAchievement] =
     useState<GalleryItem | null>(null);
 
   const navigate = useNavigate();
 
+  // Fetch a page of gallery items
+  const fetchGalleryPage = async (
+    type: "event" | "achievement",
+    page: number
+  ) => {
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    const { data, count } = await supabase
+      .from("gallery")
+      .select("*", { count: "exact" })
+      .eq("type", type)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    return { data: (data || []) as GalleryItem[], count };
+  };
+
+  // Initial load
   useEffect(() => {
-    const fetchGallery = async () => {
+    const fetchInitial = async () => {
       setLoading(true);
 
-      const { data: events } = await supabase
-        .from("gallery")
-        .select("*")
-        .eq("type", "event")
-        .order("created_at", { ascending: false });
+      const [eventsResult, achieveResult] = await Promise.all([
+        fetchGalleryPage("event", 0),
+        fetchGalleryPage("achievement", 0),
+      ]);
 
-      const { data: achievementsData } = await supabase
-        .from("gallery")
-        .select("*")
-        .eq("type", "achievement")
-        .order("created_at", { ascending: false });
+      setEventPhotos(eventsResult.data);
+      setEventCount(eventsResult.count);
+      setEventHasMore(eventsResult.data.length >= PAGE_SIZE);
+      setEventPage(1);
 
-      setEventPhotos(events || []);
-      setAchievements(achievementsData || []);
+      setAchievements(achieveResult.data);
+      setAchieveCount(achieveResult.count);
+      setAchieveHasMore(achieveResult.data.length >= PAGE_SIZE);
+      setAchievePage(1);
+
       setLoading(false);
     };
 
-    fetchGallery();
+    fetchInitial();
   }, []);
+
+  // Load more event photos
+  const loadMoreEvents = useCallback(async () => {
+    if (loadingMoreEvents || !eventHasMore) return;
+    setLoadingMoreEvents(true);
+    const result = await fetchGalleryPage("event", eventPage);
+    setEventPhotos((prev) => [...prev, ...result.data]);
+    setEventHasMore(result.data.length >= PAGE_SIZE);
+    setEventPage((p) => p + 1);
+    setLoadingMoreEvents(false);
+  }, [eventPage, eventHasMore, loadingMoreEvents]);
+
+  // Load more achievements
+  const loadMoreAchievements = useCallback(async () => {
+    if (loadingMoreAchieve || !achieveHasMore) return;
+    setLoadingMoreAchieve(true);
+    const result = await fetchGalleryPage("achievement", achievePage);
+    setAchievements((prev) => [...prev, ...result.data]);
+    setAchieveHasMore(result.data.length >= PAGE_SIZE);
+    setAchievePage((p) => p + 1);
+    setLoadingMoreAchieve(false);
+  }, [achievePage, achieveHasMore, loadingMoreAchieve]);
 
   const closeEventSlider = () => setActiveIndex(null);
   const closeAchievement = () => setActiveAchievement(null);
@@ -113,13 +171,24 @@ export default function Gallery() {
                   className="cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition"
                 >
                   <img
-                    src={item.image_url}
+                    src={getGalleryThumbnail(item.image_url)}
                     alt={item.event_name}
+                    loading="lazy"
+                    decoding="async"
                     className="h-72 w-full object-cover"
                   />
                 </div>
               ))}
             </div>
+
+            <LoadMoreButton
+              onClick={loadMoreEvents}
+              loading={loadingMoreEvents}
+              hasMore={eventHasMore}
+              loadedCount={eventPhotos.length}
+              totalCount={eventCount}
+              label="Load More Photos"
+            />
           </div>
         )}
 
@@ -141,19 +210,30 @@ export default function Gallery() {
                   className="cursor-pointer rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition"
                 >
                   <img
-                    src={item.image_url}
+                    src={getGalleryThumbnail(item.image_url)}
                     alt={item.event_name}
+                    loading="lazy"
+                    decoding="async"
                     className="h-72 w-full object-cover"
                   />
                 </div>
               ))}
             </div>
+
+            <LoadMoreButton
+              onClick={loadMoreAchievements}
+              loading={loadingMoreAchieve}
+              hasMore={achieveHasMore}
+              loadedCount={achievements.length}
+              totalCount={achieveCount}
+              label="Load More Achievements"
+            />
           </div>
         )}
 
       </section>
 
-      {/* EVENT MODAL */}
+      {/* EVENT MODAL — uses full resolution */}
       {activeIndex !== null && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
           <button
@@ -224,7 +304,7 @@ export default function Gallery() {
         </div>
       )}
 
-      {/* ACHIEVEMENT MODAL */}
+      {/* ACHIEVEMENT MODAL — uses full resolution */}
       {activeAchievement && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
           <button

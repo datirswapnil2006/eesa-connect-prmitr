@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 import {
   getAllExecutiveMembersAdmin,
   getAllForums,
@@ -340,11 +341,15 @@ export default function AdminExecutiveMembers() {
                     <span>Upload Image</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            toast.error("Image file size should not exceed 5MB");
+                            return;
+                          }
                           setImageFile(file);
                           setPreview(URL.createObjectURL(file));
                         }
@@ -353,10 +358,11 @@ export default function AdminExecutiveMembers() {
                   </label>
                   {preview && (
                     <div className="flex items-center gap-3">
-                      <img
+                      <OptimizedImage
                         src={preview}
                         alt="Preview"
-                        className="w-14 h-14 rounded-full object-cover border-2 border-primary shadow-sm"
+                        variant="profile"
+                        containerClassName="w-14 h-14 rounded-full border-2 border-primary shadow-sm"
                       />
                       <span className="text-xs text-slate-500">Image selected</span>
                     </div>
@@ -542,17 +548,13 @@ export default function AdminExecutiveMembers() {
 
                       {/* PHOTO & NAME */}
                       <div className="flex items-center gap-4 mb-4">
-                        {member.photo_url ? (
-                          <img
-                            src={member.photo_url}
-                            alt={member.full_name}
-                            className="w-16 h-16 rounded-2xl object-cover border-2 border-primary/20 shadow-sm"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-lg border border-primary/20">
-                            {member.full_name.slice(0, 2).toUpperCase()}
-                          </div>
-                        )}
+                        <OptimizedImage
+                          src={member.photo_url}
+                          alt={member.full_name}
+                          variant="profile"
+                          fallbackText={member.full_name}
+                          containerClassName="w-14 h-14 rounded-2xl border-2 border-primary/20 shadow-sm"
+                        />
 
                         <div className="overflow-hidden">
                           <h3 className="font-bold text-slate-900 text-base truncate">

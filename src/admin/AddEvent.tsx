@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabase/client";
+import { uploadEventImage } from "@/lib/uploadImage";
 import { Pencil } from "lucide-react";
+import OptimizedImage from "@/components/common/OptimizedImage";
 
 type Event = {
   id: string;
@@ -182,10 +184,11 @@ export default function AddEvent() {
           />
 
           {existingImage && (
-            <img
+            <OptimizedImage
               src={existingImage}
               alt="Event"
-              className="mt-3 h-32 rounded-lg object-cover"
+              variant="event"
+              containerClassName="mt-3 h-32 rounded-lg"
             />
           )}
         </div>
@@ -228,9 +231,11 @@ export default function AddEvent() {
                 <p className="text-sm text-slate-600">{event.location}</p>
 
                 {event.image_url && (
-                  <img
+                  <OptimizedImage
                     src={event.image_url}
-                    className="mt-2 h-20 rounded object-cover"
+                    alt={event.title}
+                    variant="event"
+                    containerClassName="mt-2 h-20 w-36 rounded"
                   />
                 )}
               </div>

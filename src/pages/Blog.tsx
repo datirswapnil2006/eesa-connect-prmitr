@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 import { BookOpen, ArrowLeft, Calendar, Clock, User, ChevronRight, Loader2, Search, Filter } from "lucide-react";
+import LoadMoreButton from "@/components/common/LoadMoreButton";
+
+const BLOG_PAGE_SIZE = 12;
 
 type Blog = {
   id: string;
@@ -16,55 +19,94 @@ type Blog = {
 export default function Blog() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
+  const [blogCount, setBlogCount] = useState<number | null>(null);
+  const [blogPage, setBlogPage] = useState(0);
+  const [blogHasMore, setBlogHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      const { data, error } = await supabase
-        .from("blogs")
-        .select("*")
-        .order("created_at", { ascending: false });
+  // Fetch a page of blogs with complete content and details
+  const fetchBlogPage = async (page: number) => {
+    const from = page * BLOG_PAGE_SIZE;
+    const to = from + BLOG_PAGE_SIZE - 1;
 
-      if (!error) {
-        const blogsWithDefaults = (data || []).map(blog => ({
-          ...blog,
-          author: blog.author || "EESA Team",
-          read_time: blog.read_time || Math.ceil(blog.content.length / 1000) * 3, // ~3 min per 1000 chars
-          category: blog.category || "General"
-        }));
-        setBlogs(blogsWithDefaults);
-        setFilteredBlogs(blogsWithDefaults);
-      }
+    const { data, error, count } = await supabase
+      .from("blogs")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      console.error("Error fetching blogs:", error);
+      return { data: [], count: 0 };
+    }
+
+    const blogsWithDefaults: Blog[] = (data || []).map((blog: any) => ({
+      ...blog,
+      content: blog.content || "",
+      author: blog.author || "EESA Team",
+      read_time: blog.read_time || Math.ceil((blog.content || "").length / 1000) * 3 || 3,
+      category: blog.category || "General",
+    }));
+
+    return { data: blogsWithDefaults, count };
+  };
+
+  // Initial load
+  useEffect(() => {
+    const fetchInitial = async () => {
+      setLoading(true);
+      const result = await fetchBlogPage(0);
+      setBlogs(result.data);
+      setFilteredBlogs(result.data);
+      setBlogCount(result.count);
+      setBlogHasMore(result.data.length >= BLOG_PAGE_SIZE);
+      setBlogPage(1);
       setLoading(false);
     };
 
-    fetchBlogs();
+    fetchInitial();
   }, []);
+
+  // Load more blogs
+  const loadMoreBlogs = useCallback(async () => {
+    if (loadingMore || !blogHasMore) return;
+    setLoadingMore(true);
+    const result = await fetchBlogPage(blogPage);
+    setBlogs((prev) => [...prev, ...result.data]);
+    setBlogHasMore(result.data.length >= BLOG_PAGE_SIZE);
+    setBlogPage((p) => p + 1);
+    setLoadingMore(false);
+  }, [blogPage, blogHasMore, loadingMore]);
 
   // Filter blogs based on search and category
   useEffect(() => {
     let result = blogs;
     
     if (searchQuery) {
-      result = result.filter(blog =>
-        blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        blog.content.toLowerCase().includes(searchQuery.toLowerCase())
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (blog) =>
+          blog.title.toLowerCase().includes(q) ||
+          blog.content.toLowerCase().includes(q) ||
+          blog.author?.toLowerCase().includes(q) ||
+          blog.category?.toLowerCase().includes(q)
       );
     }
     
     if (selectedCategory) {
-      result = result.filter(blog => blog.category === selectedCategory);
+      result = result.filter((blog) => blog.category === selectedCategory);
     }
     
     setFilteredBlogs(result);
   }, [searchQuery, selectedCategory, blogs]);
 
-  const categories = Array.from(new Set(blogs.map(blog => blog.category)));
+  const categories = Array.from(new Set(blogs.map((blog) => blog.category).filter(Boolean)));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -151,7 +193,7 @@ export default function Blog() {
             >
               All Articles
             </button>
-            {categories.map(category => (
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -211,72 +253,77 @@ export default function Blog() {
             return (
               <article
                 key={blog.id}
-                className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-primary/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-primary/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Card Header with Gradient */}
                 <div className="h-2 bg-gradient-to-r from-primary via-primary/60 to-primary/30" />
                 
-                <div className="p-6">
-                  {/* Category Badge */}
-                  <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full mb-4">
-                    {blog.category}
-                  </span>
+                <div className="p-6 flex flex-col h-full justify-between">
+                  <div>
+                    {/* Category Badge */}
+                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full mb-4">
+                      {blog.category}
+                    </span>
 
-                  {/* Title */}
-                  <h2 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-primary transition-colors line-clamp-2">
-                    {blog.title}
-                  </h2>
+                    {/* Title */}
+                    <h2 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-primary transition-colors line-clamp-2">
+                      {blog.title}
+                    </h2>
 
-                  {/* Meta Info */}
-                  <div className="flex items-center gap-4 text-sm text-slate-500 mb-6">
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      <span>{blog.author}</span>
+                    {/* Meta Info */}
+                    <div className="flex items-center gap-4 text-sm text-slate-500 mb-6 flex-wrap">
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        <span>{blog.author}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {blog.created_at ? new Date(blog.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          }) : 'Recently'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{blog.read_time} min read</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {blog.created_at ? new Date(blog.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        }) : 'Recently'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{blog.read_time} min read</span>
-                    </div>
-                  </div>
 
-                  {/* Content Preview */}
-                  <div className="relative">
-                    <p
-                      className={`text-slate-700 leading-relaxed transition-all duration-300 ${
-                        !isExpanded ? "line-clamp-3" : ""
-                      }`}
-                    >
-                      {blog.content}
-                    </p>
-                    
-                    {/* Gradient overlay for collapsed state */}
-                    {!isExpanded && blog.content.length > 200 && (
-                      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
-                    )}
+                    {/* Content Preview */}
+                    <div className="relative">
+                      <p
+                        className={`text-slate-700 leading-relaxed whitespace-pre-line text-justify ${
+                          !isExpanded ? "line-clamp-4" : ""
+                        }`}
+                      >
+                        {blog.content}
+                      </p>
+                      
+                      {!isExpanded && blog.content.length > 180 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                      )}
+                    </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="mt-6 flex items-center justify-between pt-6 border-t">
+                  <div className="mt-6 flex items-center justify-between pt-6 border-t border-slate-100">
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : blog.id)}
-                      className="group/btn inline-flex items-center gap-2 text-primary font-medium hover:text-primary/80 transition-colors"
+                      className="group/btn inline-flex items-center gap-2 text-primary font-medium hover:text-primary/80 transition-colors text-sm"
                     >
                       {isExpanded ? "Show less" : "Continue reading"}
                       <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : 'group-hover/btn:translate-x-1'}`} />
                     </button>
                     
-                    <button className="text-slate-400 hover:text-primary transition-colors">
+                    <button 
+                      onClick={() => setExpandedId(isExpanded ? null : blog.id)}
+                      className="text-slate-400 hover:text-primary transition-colors"
+                      title={isExpanded ? "Collapse article" : "Expand article"}
+                    >
                       <BookOpen className="w-5 h-5" />
                     </button>
                   </div>
@@ -286,12 +333,22 @@ export default function Blog() {
           })}
         </div>
 
+        {/* Load More */}
+        <LoadMoreButton
+          onClick={loadMoreBlogs}
+          loading={loadingMore}
+          hasMore={blogHasMore}
+          loadedCount={blogs.length}
+          totalCount={blogCount}
+          label="Load More Articles"
+        />
+
         {/* Stats */}
-        {!loading && blogs.length > 0 && (
+        {!loading && (blogCount || blogs.length > 0) && (
           <div className="mt-16 pt-8 border-t">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="text-center p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl">
-                <div className="text-3xl font-bold text-primary mb-2">{blogs.length}</div>
+                <div className="text-3xl font-bold text-primary mb-2">{blogCount || blogs.length}</div>
                 <div className="text-sm text-slate-600">Total Articles</div>
               </div>
               <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl">
@@ -302,13 +359,13 @@ export default function Blog() {
               </div>
               <div className="text-center p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl">
                 <div className="text-3xl font-bold text-primary mb-2">
-                  {Math.round(blogs.reduce((acc, blog) => acc + (blog.read_time || 0), 0) / 60)}
+                  {Math.round(blogs.reduce((acc, blog) => acc + (blog.read_time || 0), 0) / 60) || 1}
                 </div>
                 <div className="text-sm text-slate-600">Hours of Content</div>
               </div>
               <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl">
                 <div className="text-3xl font-bold text-slate-900 mb-2">
-                  {new Date(Math.max(...blogs.map(b => new Date(b.created_at || 0).getTime()))).getFullYear()}
+                  {blogs.length > 0 ? new Date(Math.max(...blogs.map(b => new Date(b.created_at || 0).getTime()))).getFullYear() : new Date().getFullYear()}
                 </div>
                 <div className="text-sm text-slate-600">Latest Update</div>
               </div>
