@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Save, ArrowLeft } from "lucide-react";
 
 type AboutRow = {
   id: string;
@@ -10,6 +11,7 @@ type AboutRow = {
 };
 
 export default function EditAbout() {
+  const navigate = useNavigate();
   const [sections, setSections] = useState<AboutRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +48,17 @@ export default function EditAbout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="eesa-container py-10 max-w-4xl">
-        <h1 className="text-2xl font-bold mb-6">Edit About Page</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 transition-all shadow-2xs group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back</span>
+          </button>
+          <h1 className="text-2xl font-bold">Edit About Page</h1>
+        </div>
 
         {sections.map((section) => (
           <div

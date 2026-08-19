@@ -79,10 +79,20 @@ export default function AddBlog() {
     <div className="min-h-screen bg-slate-50 py-10">
       <div className="max-w-4xl mx-auto px-4">
 
-        {/* Page Title */}
-        <h1 className="text-3xl font-bold text-slate-900 mb-8">
-          Create Blog
-        </h1>
+        {/* Page Title & Back */}
+        <div className="flex items-center gap-3 mb-8">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-50 transition-all shadow-2xs group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back</span>
+          </button>
+          <h1 className="text-3xl font-bold text-slate-900">
+            Create Blog
+          </h1>
+        </div>
 
         {/* FORM START */}
         <form

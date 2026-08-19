@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Search,
   Filter,
@@ -36,6 +36,7 @@ import {
   Phone,
   Mail,
   UserCheck,
+  ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/supabase/client";
 import {
@@ -110,6 +111,7 @@ const INDUSTRIES = [
 const GRAD_YEARS = Array.from({ length: 2050 - 1987 + 1 }, (_, i) => 2050 - i);
 
 export default function Alumni() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "directory";
   const [activeEcosystemTab, setActiveEcosystemTab] = useState<string>(initialTab);
@@ -762,6 +764,17 @@ export default function Alumni() {
         {/* HERO SECTION */}
         <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-slate-50 to-slate-50 py-6 md:py-9 border-b border-slate-200">
           <div className="eesa-container relative z-10">
+            <div className="max-w-4xl mx-auto mb-2 flex justify-start">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-white transition-all shadow-2xs group"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Back</span>
+              </button>
+            </div>
+
             <div className="max-w-4xl mx-auto text-center space-y-3">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wide border border-primary/20">
                 <Sparkles className="w-3.5 h-3.5" />

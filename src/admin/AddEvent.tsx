@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabase/client";
-import { uploadEventImage } from "@/lib/uploadImage";
-import { Pencil } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 
 type Event = {
@@ -18,6 +18,7 @@ type Event = {
 };
 
 export default function AddEvent() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -141,9 +142,19 @@ export default function AddEvent() {
 
       {/* FORM */}
       <div className="bg-white p-8 rounded-xl border">
-        <h1 className="text-2xl font-bold mb-6">
-          {editingId ? "Edit Event" : "Add Event"}
-        </h1>
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-200 transition-all shadow-2xs group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back</span>
+          </button>
+          <h1 className="text-2xl font-bold">
+            {editingId ? "Edit Event" : "Add Event"}
+          </h1>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <input className="input" placeholder="Event Title" value={title} onChange={(e) => setTitle(e.target.value)} />

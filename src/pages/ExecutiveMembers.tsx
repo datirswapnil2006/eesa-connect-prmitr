@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import {
   Users,
@@ -7,6 +8,7 @@ import {
   Search,
   X,
   GraduationCap,
+  ArrowLeft,
 } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import {
@@ -17,6 +19,7 @@ import {
 } from "@/lib/api";
 
 export default function ExecutiveMembers() {
+  const navigate = useNavigate();
   const [members, setMembers] = useState<ExecutiveMember[]>([]);
   const [forums, setForums] = useState<ForumItem[]>([]);
   const [selectedForumId, setSelectedForumId] = useState<string>("ALL");
@@ -103,20 +106,33 @@ export default function ExecutiveMembers() {
 
         {/* HERO SECTION - COMPACT & PROFESSIONAL */}
         <section className="relative py-6 sm:py-8 md:py-10 bg-gradient-to-b from-primary/5 via-secondary/20 to-transparent border-b border-slate-200/80">
-          <div className="eesa-container max-w-4xl text-center relative z-10">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              Leadership & Committee
-            </span>
+          <div className="eesa-container max-w-4xl relative z-10">
+            <div className="flex justify-start mb-3">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-white transition-all shadow-2xs group"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Back</span>
+              </button>
+            </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
-              EESA <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-eesa-teal">Executive Members</span>
-            </h1>
+            <div className="text-center">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                Leadership & Committee
+              </span>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
-              Meet the student coordinators and executive committee driving innovation,
-              organizing forums, and leading student initiatives at PRMIT&R.
-            </p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+                EESA <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-eesa-teal">Executive Members</span>
+              </h1>
+
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                Meet the student coordinators and executive committee driving innovation,
+                organizing forums, and leading student initiatives at PRMIT&R.
+              </p>
+            </div>
           </div>
         </section>
 

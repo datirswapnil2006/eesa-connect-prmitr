@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/supabase/client";
 import {
@@ -6,6 +7,7 @@ import {
   MapPin,
   Download,
   Clock,
+  ArrowLeft,
 } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 import LoadMoreButton from "@/components/common/LoadMoreButton";
@@ -27,6 +29,7 @@ type Event = {
 };
 
 export default function Events() {
+  const navigate = useNavigate();
   const [upcoming, setUpcoming] = useState<Event[]>([]);
   const [past, setPast] = useState<Event[]>([]);
   const [pastCount, setPastCount] = useState<number | null>(null);
@@ -136,20 +139,31 @@ export default function Events() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-20">
+    <div className="min-h-screen bg-slate-50 py-12 md:py-20">
       <div className="max-w-6xl mx-auto px-4">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-4xl font-bold flex items-center gap-3">
-            <CalendarDays className="w-8 h-8 text-primary" />
-            Events
-          </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-50 transition-all shadow-2xs group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back</span>
+            </button>
+
+            <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-2.5 text-slate-900">
+              <CalendarDays className="w-7 h-7 text-primary" />
+              Events
+            </h1>
+          </div>
 
           {upcoming.length > 0 && (
             <button
               onClick={downloadExcel}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg"
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-primary/90 transition w-fit"
             >
               <Download className="w-4 h-4" />
               Download Upcoming

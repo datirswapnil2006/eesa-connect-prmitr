@@ -1,21 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getMembershipSettings } from "@/lib/api";
-
-
-
-const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Executive Members", path: "/executive-members" },
-  { name: "Alumni", path: "/alumni" },
-  { name: "Blog", path: "/blog" },
-  { name: "Events", path: "/events" },
-  { name: "Gallery", path: "/gallery" },
-  { name: "Forum", path: "/forum" },
-];
 import OptimizedImage from "@/components/common/OptimizedImage";
 
 type MembershipSettings = {
@@ -27,6 +14,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [membership, setMembership] = useState<any>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -56,19 +44,33 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
 
-          {/* LEFT: EESA */}
-          <Link to="/" className="flex items-center gap-2 md:gap-3">
-            <OptimizedImage
-              src="/eesa-logo.jpg"
-              alt="EESA Logo"
-              variant="logo"
-              priority={true}
-              containerClassName="w-10 h-10 md:w-11 md:h-11"
-            />
-            <span className="font-display text-lg md:text-xl tracking-wide font-bold">
-              EESA
-            </span>
-          </Link>
+          {/* LEFT: BACK BUTTON (on non-home pages) + EESA BRAND */}
+          <div className="flex items-center gap-2">
+            {location.pathname !== "/" && (
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 transition-all border border-slate-200 shadow-2xs group"
+                title="Go Back"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-600 group-hover:text-primary group-hover:-translate-x-0.5 transition-transform" />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            )}
+
+            <Link to="/" className="flex items-center gap-2 md:gap-3">
+              <OptimizedImage
+                src="/eesa-logo.jpg"
+                alt="EESA Logo"
+                variant="logo"
+                priority={true}
+                containerClassName="w-10 h-10 md:w-11 md:h-11"
+              />
+              <span className="font-display text-lg md:text-xl tracking-wide font-bold">
+                EESA
+              </span>
+            </Link>
+          </div>
 
           {/* CENTER NAV (DESKTOP) */}
           <div className="hidden md:flex items-center gap-1">

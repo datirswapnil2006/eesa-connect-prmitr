@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabase/client";
+import { ArrowLeft } from "lucide-react";
 
 export default function EditHome() {
+  const navigate = useNavigate();
   const [form, setForm] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +30,17 @@ export default function EditHome() {
       <div className="eesa-container py-12 max-w-3xl">
         {/* Header */}
         <div className="mb-8">
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 transition-all shadow-2xs group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back</span>
+            </button>
+          </div>
+
           <h1 className="text-3xl font-bold text-slate-900">
             Edit Home Page
           </h1>

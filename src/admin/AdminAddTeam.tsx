@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabase/client";
 import { uploadTeamImage } from "@/lib/uploadImage";
+import { ArrowLeft } from "lucide-react";
 import OptimizedImage from "@/components/common/OptimizedImage";
 
 type TeamMember = {
@@ -13,6 +15,7 @@ type TeamMember = {
 };
 
 export default function AdminAddTeam() {
+  const navigate = useNavigate();
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -38,9 +41,6 @@ export default function AdminAddTeam() {
   }, []);
 
   const resetForm = () => {
-    setEditingId(null);
-    setImageFile(null);
-    setPreview(null);
     setForm({
       name: "",
       role: "faculty",
@@ -48,6 +48,22 @@ export default function AdminAddTeam() {
       bio: "",
       image_url: "",
     });
+    setEditingId(null);
+    setImageFile(null);
+    setPreview(null);
+  };
+
+  const handleEdit = (member: TeamMember) => {
+    setEditingId(member.id);
+    setForm({
+      name: member.name,
+      role: member.role,
+      position: member.position,
+      bio: member.bio,
+      image_url: member.image_url,
+    });
+    setPreview(member.image_url);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,35 +72,41 @@ export default function AdminAddTeam() {
     setSuccess("");
 
     try {
-      let imageUrl = form.image_url;
-      if (imageFile) imageUrl = await uploadTeamImage(imageFile);
+      let finalImageUrl = form.image_url;
+
+      if (imageFile) {
+        finalImageUrl = await uploadTeamImage(imageFile);
+      }
 
       if (editingId) {
         await supabase
           .from("about_team")
-          .update({ ...form, image_url: imageUrl })
+          .update({
+            ...form,
+            image_url: finalImageUrl,
+          })
           .eq("id", editingId);
 
-        setSuccess("Team member updated successfully.");
+        setSuccess("Team member updated successfully!");
       } else {
         await supabase.from("about_team").insert([
-          { ...form, image_url: imageUrl },
+          {
+            ...form,
+            image_url: finalImageUrl,
+          },
         ]);
 
-        setSuccess("Team member added successfully.");
+        setSuccess("Team member added successfully!");
       }
 
       resetForm();
       fetchTeam();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save team member");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEdit = (person: TeamMember) => {
-    setEditingId(person.id);
-    setForm(person);
-    setPreview(person.image_url);
   };
 
   const handleDelete = async (id: string) => {
@@ -94,12 +116,23 @@ export default function AdminAddTeam() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-16">
+    <div className="max-w-7xl mx-auto space-y-16 py-8">
 
       {/* HEADER */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-eesa-teal p-10 text-white shadow-lg">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-eesa-teal p-8 md:p-10 text-white shadow-lg">
         <div className="absolute inset-0 bg-black/10" />
         <div className="relative">
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-xs md:text-sm font-semibold text-white transition-all shadow-2xs group backdrop-blur"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back</span>
+            </button>
+          </div>
+
           <h1 className="text-3xl font-bold">
             Team Management
           </h1>

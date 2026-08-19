@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
+import { ArrowLeft } from "lucide-react";
 
 export default function AddGallery() {
+  const navigate = useNavigate();
   const [type, setType] = useState<"event" | "achievement">("event");
 
   const [eventName, setEventName] = useState("");
@@ -85,7 +88,17 @@ export default function AddGallery() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
       <div className="max-w-xl mx-auto bg-white rounded-xl shadow p-6">
-        <h2 className="text-2xl font-semibold mb-6">Add Gallery Item</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-200 transition-all shadow-2xs group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back</span>
+          </button>
+          <h2 className="text-2xl font-semibold">Add Gallery Item</h2>
+        </div>
 
         {error && (
           <div className="mb-4 bg-red-50 text-red-600 px-4 py-2 rounded">

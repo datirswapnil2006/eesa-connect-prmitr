@@ -1,9 +1,24 @@
 // src/pages/Terms.tsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Terms: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-10">
+      <div className="max-w-3xl mx-auto mb-4">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-100 transition-all shadow-2xs group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back</span>
+        </button>
+      </div>
+
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow border border-slate-200 p-8 space-y-8">
 
         {/* Header */}

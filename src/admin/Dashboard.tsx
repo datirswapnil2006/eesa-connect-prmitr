@@ -11,6 +11,7 @@ import {
   Home,
   Info,
   MessageSquare,
+  ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/supabase/client";
 import OptimizedImage from "@/components/common/OptimizedImage";
@@ -58,6 +59,16 @@ export default function AdminDashboard() {
 
           {/* LEFT SIDE - EESA Logo + Title */}
           <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-slate-200 transition-all shadow-2xs group"
+              title="Back to Website"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back</span>
+            </button>
+
             {/* EESA Logo */}
             <OptimizedImage
               src="/eesa-logo.jpg"

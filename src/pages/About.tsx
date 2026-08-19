@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import {
   Target,
@@ -10,6 +10,7 @@ import {
   Lightbulb,
   ChevronDown,
   Sparkles,
+  ArrowLeft,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAboutPage, getAboutTeam } from "@/lib/api";
@@ -44,6 +45,7 @@ const values = [
 
 const About = () => {
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery({
     queryKey: ["about-page"],
@@ -72,22 +74,35 @@ const About = () => {
   return (
     <Layout>
       {/* HERO */}
-      <section className="relative py-32 bg-gradient-to-br from-background via-secondary/40 to-background">
-        <div className="eesa-container max-w-5xl text-center">
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-            <Sparkles className="w-4 h-4" />
-            About Us
-          </span>
+      <section className="relative py-20 md:py-28 bg-gradient-to-br from-background via-secondary/40 to-background">
+        <div className="eesa-container max-w-5xl">
+          <div className="flex justify-start mb-6">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 border border-slate-200 text-xs md:text-sm font-semibold text-slate-700 hover:text-primary hover:bg-white transition-all shadow-2xs group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back</span>
+            </button>
+          </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-8">
-            About <span className="text-primary">EESA</span>
-          </h1>
+          <div className="text-center">
+            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+              <Sparkles className="w-4 h-4" />
+              About Us
+            </span>
 
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto text-justify whitespace-pre-line">
-            {whoWeAre?.content}
-          </p>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-8">
+              About <span className="text-primary">EESA</span>
+            </h1>
 
-          <ChevronDown className="w-8 h-8 mx-auto text-primary/50 mt-12 animate-bounce" />
+            <p className="text-base md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto text-justify whitespace-pre-line">
+              {whoWeAre?.content}
+            </p>
+
+            <ChevronDown className="w-8 h-8 mx-auto text-primary/50 mt-12 animate-bounce" />
+          </div>
         </div>
       </section>
 
