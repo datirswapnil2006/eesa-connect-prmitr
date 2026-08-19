@@ -126,10 +126,10 @@ export default function AdminAddTeam() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-xs md:text-sm font-semibold text-white transition-all shadow-2xs group backdrop-blur"
+              className="group flex items-center gap-2 text-white hover:text-white transition-all duration-300 px-3 py-2 rounded-lg hover:bg-white/20 bg-white/10 backdrop-blur"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-              <span>Back</span>
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="text-sm font-medium">Back</span>
             </button>
           </div>
 

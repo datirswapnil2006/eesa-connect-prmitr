@@ -20,15 +20,15 @@ const NotFound = () => {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition"
+            className="group flex items-center gap-2 text-slate-700 hover:text-primary transition-all duration-300 px-4 py-2 rounded-lg hover:bg-slate-100 bg-slate-50 border border-slate-200"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Go Back
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-medium">Back</span>
           </button>
 
           <a
             href="/"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition shadow-sm"
           >
             <Home className="w-4 h-4" />
             Home
