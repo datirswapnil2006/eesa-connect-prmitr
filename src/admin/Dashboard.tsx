@@ -8,6 +8,7 @@ import {
   Info,
   LogOut,
   Users,
+  GraduationCap,
 } from "lucide-react";
 import { supabase } from "@/supabase/client";
 import { Link } from "react-router-dom";
@@ -159,6 +160,13 @@ export default function AdminDashboard() {
           </h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <DashboardCard
+              icon={GraduationCap}
+              title="Alumni Management"
+              description="Review applications, approve alumni, manage directory & connections"
+              link="/admin/alumni"
+            />
+
             <DashboardCard
               icon={Users}
               title="Executive Members"

@@ -12,6 +12,7 @@ import Events from "./pages/Events";
 import Gallery from "./pages/Gallery";
 import Forum from "./pages/Forum";
 import ExecutiveMembers from "./pages/ExecutiveMembers";
+import Alumni from "./pages/Alumni";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -19,6 +20,7 @@ import NotFound from "./pages/NotFound";
 /* ADMIN PAGES */
 import AdminLogin from "./admin/Login";
 import AdminDashboard from "./admin/Dashboard";
+import AdminAlumni from "./admin/AdminAlumni";
 import BlogList from "./admin/BlogList";
 import AddBlog from "./admin/AddBlog";
 import AddEvent from "./admin/AddEvent";
@@ -50,6 +52,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/executive-members" element={<ExecutiveMembers />} />
+          <Route path="/alumni" element={<Alumni />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/events" element={<Events />} />
           <Route path="/gallery" element={<Gallery />} />
@@ -68,6 +71,16 @@ const App = () => (
             element={
               <AdminGuard>
                 <AdminDashboard />
+              </AdminGuard>
+            }
+          />
+
+          {/* ALUMNI MANAGEMENT */}
+          <Route
+            path="/admin/alumni"
+            element={
+              <AdminGuard>
+                <AdminAlumni />
               </AdminGuard>
             }
           />

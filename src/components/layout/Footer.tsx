@@ -64,6 +64,7 @@ const Footer = () => {
                 { name: "Home", path: "/" },
                 { name: "About", path: "/about" },
                 { name: "Executive Members", path: "/executive-members" },
+                { name: "Alumni Connect", path: "/alumni" },
                 { name: "Blog", path: "/blog" },
                 { name: "Events", path: "/events" },
                 { name: "Gallery", path: "/gallery" },
