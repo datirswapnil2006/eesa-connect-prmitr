@@ -75,23 +75,11 @@ const About = () => {
     <Layout>
       {/* HERO */}
       <section className="relative py-20 md:py-28 bg-gradient-to-br from-background via-secondary/40 to-background">
-        <div className="eesa-container max-w-5xl">
-          <div className="flex justify-start mb-6">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="group flex items-center gap-2 text-slate-700 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg hover:bg-slate-100/80 bg-white/60 backdrop-blur-sm border border-slate-200/60"
-            >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-medium">Back</span>
-            </button>
-          </div>
-
-          <div className="text-center">
-            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              <Sparkles className="w-4 h-4" />
-              About Us
-            </span>
+        <div className="eesa-container max-w-5xl text-center">
+          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+            <Sparkles className="w-4 h-4" />
+            About Us
+          </span>
 
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-8">
               About <span className="text-primary">EESA</span>
@@ -102,7 +90,6 @@ const About = () => {
             </p>
 
             <ChevronDown className="w-8 h-8 mx-auto text-primary/50 mt-12 animate-bounce" />
-          </div>
         </div>
       </section>
 
