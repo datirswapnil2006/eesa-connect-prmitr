@@ -105,3 +105,33 @@ WHERE NOT EXISTS (SELECT 1 FROM public.batches WHERE name = 'Batch 2023-24');
 INSERT INTO public.batches (name, academic_year, display_order, is_active)
 SELECT 'Batch 2022-23', '2022-23', 3, true
 WHERE NOT EXISTS (SELECT 1 FROM public.batches WHERE name = 'Batch 2022-23');
+
+-- 9. Storage Bucket & Policies for team-images (Profile photos)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('team-images', 'team-images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Public team images read access" ON storage.objects;
+CREATE POLICY "Public team images read access"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'team-images');
+
+DROP POLICY IF EXISTS "Allow team images upload" ON storage.objects;
+CREATE POLICY "Allow team images upload"
+ON storage.objects FOR INSERT
+TO public
+WITH CHECK (bucket_id = 'team-images');
+
+DROP POLICY IF EXISTS "Allow team images update" ON storage.objects;
+CREATE POLICY "Allow team images update"
+ON storage.objects FOR UPDATE
+TO public
+USING (bucket_id = 'team-images');
+
+DROP POLICY IF EXISTS "Allow team images delete" ON storage.objects;
+CREATE POLICY "Allow team images delete"
+ON storage.objects FOR DELETE
+TO public
+USING (bucket_id = 'team-images');
+

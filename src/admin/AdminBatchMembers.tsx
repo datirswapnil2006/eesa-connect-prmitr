@@ -75,6 +75,14 @@ export default function AdminBatchMembers() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const getFriendlyError = (err: any, defaultMsg = "An unexpected error occurred.") => {
+    const msg = err?.message || String(err);
+    if (msg.includes("schema cache") || msg.includes("batches") || msg.includes("batch_members")) {
+      return "Database tables not found: Please run the 'supabase_batch_members.sql' migration script in your Supabase SQL Editor to create the batches and batch_members tables.";
+    }
+    return msg || defaultMsg;
+  };
+
   const loadAllData = async () => {
     try {
       setFetching(true);
@@ -89,7 +97,7 @@ export default function AdminBatchMembers() {
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMsg("Failed to load batches or batch members.");
+      setErrorMsg(getFriendlyError(err, "Failed to load batches or batch members."));
     } finally {
       setFetching(false);
     }
@@ -154,7 +162,7 @@ export default function AdminBatchMembers() {
       await loadAllData();
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || "Failed to save batch.");
+      setErrorMsg(getFriendlyError(err, "Failed to save batch."));
     } finally {
       setLoading(false);
     }
@@ -269,7 +277,7 @@ export default function AdminBatchMembers() {
       await loadAllData();
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || "Failed to save batch member.");
+      setErrorMsg(getFriendlyError(err, "Failed to save batch member."));
     } finally {
       setLoading(false);
     }
