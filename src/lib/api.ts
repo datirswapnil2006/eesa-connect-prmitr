@@ -44,11 +44,18 @@ export const getLatestBlogs = async () => {
   return data;
 };
 
+/* HELPER FOR LOCAL CALENDAR DATE YYYY-MM-DD */
+export const getTodayLocalDateString = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 /* UPCOMING EVENTS (FIXED) */
 export const getUpcomingEvents = async () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayString = today.toISOString().split("T")[0];
+  const todayString = getTodayLocalDateString();
 
   const { data, error } = await supabase
     .from("events")
@@ -56,10 +63,16 @@ export const getUpcomingEvents = async () => {
     .eq("is_published", true)
     .gte("event_date", todayString) // Only today & future
     .order("event_date", { ascending: true })
-    .limit(3);
+    .limit(6);
 
   if (error) throw error;
-  return data;
+
+  // Strict client-side filter to ensure no past date slips through
+  return (data || []).filter((event: any) => {
+    if (!event.event_date) return false;
+    const datePart = event.event_date.split("T")[0].trim();
+    return datePart >= todayString;
+  });
 };
 
 /*  PAST EVENTS (with pagination) */
@@ -67,15 +80,13 @@ export const getPastEvents = async (
   limit: number = 12,
   offset: number = 0
 ): Promise<{ data: any[]; count: number | null }> => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayString = today.toISOString().split("T")[0];
+  const todayString = getTodayLocalDateString();
 
   const { data, error, count } = await supabase
     .from("events")
     .select("*", { count: "exact" })
     .eq("is_published", true)
-    .lt("event_date", todayString) 
+    .lt("event_date", todayString)
     .order("event_date", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -443,4 +454,337 @@ export const deleteExecutiveMember = async (id: string) => {
 
   if (error) throw error;
 };
+
+/* ==========================================================
+   BATCHES & BATCH MEMBERS API
+   ========================================================== */
+
+export type BatchItem = {
+  id: string;
+  name: string;
+  academic_year: string;
+  is_active: boolean;
+  display_order: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type BatchMember = {
+  id: string;
+  batch_id: string;
+  full_name: string;
+  designation: string;
+  photo_url: string;
+  bio: string;
+  email?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  is_active: boolean;
+  display_order: number;
+  created_at?: string;
+  updated_at?: string;
+  batches?: BatchItem | null;
+};
+
+/**
+ * Fetch all active batches for the public site
+ */
+export const getActiveBatches = async (): Promise<BatchItem[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("batches")
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      console.warn("Batches query fallback:", error);
+      return [
+        { id: "batch-2024-25", name: "Batch 2024-25", academic_year: "2024-25", is_active: true, display_order: 1 },
+        { id: "batch-2023-24", name: "Batch 2023-24", academic_year: "2023-24", is_active: true, display_order: 2 },
+        { id: "batch-2022-23", name: "Batch 2022-23", academic_year: "2022-23", is_active: true, display_order: 3 },
+      ];
+    }
+    return data || [];
+  } catch (err) {
+    console.error("Error fetching active batches:", err);
+    return [
+      { id: "batch-2024-25", name: "Batch 2024-25", academic_year: "2024-25", is_active: true, display_order: 1 },
+      { id: "batch-2023-24", name: "Batch 2023-24", academic_year: "2023-24", is_active: true, display_order: 2 },
+    ];
+  }
+};
+
+/**
+ * Fetch all batches for Admin
+ */
+export const getAllBatchesAdmin = async (): Promise<BatchItem[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("batches")
+      .select("*")
+      .order("display_order", { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.error("Error fetching admin batches:", err);
+    return [];
+  }
+};
+
+/**
+ * Save / Update a Batch
+ */
+export const saveBatch = async (batch: {
+  id?: string;
+  name: string;
+  academic_year: string;
+  is_active: boolean;
+  display_order: number;
+}) => {
+  if (batch.id) {
+    const { error } = await supabase
+      .from("batches")
+      .update({
+        name: batch.name,
+        academic_year: batch.academic_year,
+        is_active: batch.is_active,
+        display_order: batch.display_order,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", batch.id);
+
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from("batches")
+      .insert([
+        {
+          name: batch.name,
+          academic_year: batch.academic_year,
+          is_active: batch.is_active,
+          display_order: batch.display_order,
+        },
+      ]);
+
+    if (error) throw error;
+  }
+};
+
+/**
+ * Toggle Batch active status
+ */
+export const toggleBatchStatus = async (id: string, is_active: boolean) => {
+  const { error } = await supabase
+    .from("batches")
+    .update({ is_active, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw error;
+};
+
+/**
+ * Delete a Batch
+ */
+export const deleteBatch = async (id: string) => {
+  const { error } = await supabase
+    .from("batches")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+};
+
+/**
+ * Fetch active batch members for public view
+ */
+export const getActiveBatchMembers = async (): Promise<BatchMember[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("batch_members")
+      .select(`
+        id,
+        batch_id,
+        full_name,
+        designation,
+        photo_url,
+        bio,
+        email,
+        linkedin_url,
+        github_url,
+        is_active,
+        display_order,
+        created_at,
+        updated_at,
+        batches (
+          id,
+          name,
+          academic_year,
+          is_active
+        )
+      `)
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      console.warn("Batch members relation query fallback:", error);
+      const { data: simpleData, error: simpleErr } = await supabase
+        .from("batch_members")
+        .select("*")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+
+      if (simpleErr) throw simpleErr;
+      return (simpleData || []).map((m: any) => ({
+        ...m,
+        batches: null,
+      }));
+    }
+
+    return (data || []).map((m: any) => ({
+      ...m,
+      batches: Array.isArray(m.batches) ? m.batches[0] || null : m.batches || null,
+    }));
+  } catch (err) {
+    console.error("Error fetching active batch members:", err);
+    return [];
+  }
+};
+
+/**
+ * Fetch all batch members for Admin Dashboard
+ */
+export const getAllBatchMembersAdmin = async (): Promise<BatchMember[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("batch_members")
+      .select(`
+        id,
+        batch_id,
+        full_name,
+        designation,
+        photo_url,
+        bio,
+        email,
+        linkedin_url,
+        github_url,
+        is_active,
+        display_order,
+        created_at,
+        updated_at,
+        batches (
+          id,
+          name,
+          academic_year,
+          is_active
+        )
+      `)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      console.warn("Admin batch members relation query fallback:", error);
+      const { data: simpleData, error: simpleErr } = await supabase
+        .from("batch_members")
+        .select("*")
+        .order("display_order", { ascending: true });
+
+      if (simpleErr) throw simpleErr;
+      return (simpleData || []).map((m: any) => ({
+        ...m,
+        batches: null,
+      }));
+    }
+
+    return (data || []).map((m: any) => ({
+      ...m,
+      batches: Array.isArray(m.batches) ? m.batches[0] || null : m.batches || null,
+    }));
+  } catch (err) {
+    console.error("Error fetching admin batch members:", err);
+    return [];
+  }
+};
+
+/**
+ * Save / Update a Batch Member
+ */
+export const saveBatchMember = async (member: {
+  id?: string;
+  batch_id: string;
+  full_name: string;
+  designation: string;
+  photo_url: string;
+  bio: string;
+  email?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  is_active: boolean;
+  display_order: number;
+}) => {
+  if (member.id) {
+    const { error } = await supabase
+      .from("batch_members")
+      .update({
+        batch_id: member.batch_id,
+        full_name: member.full_name,
+        designation: member.designation,
+        photo_url: member.photo_url,
+        bio: member.bio,
+        email: member.email || "",
+        linkedin_url: member.linkedin_url || "",
+        github_url: member.github_url || "",
+        is_active: member.is_active,
+        display_order: member.display_order,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", member.id);
+
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from("batch_members")
+      .insert([
+        {
+          batch_id: member.batch_id,
+          full_name: member.full_name,
+          designation: member.designation,
+          photo_url: member.photo_url,
+          bio: member.bio,
+          email: member.email || "",
+          linkedin_url: member.linkedin_url || "",
+          github_url: member.github_url || "",
+          is_active: member.is_active,
+          display_order: member.display_order,
+        },
+      ]);
+
+    if (error) throw error;
+  }
+};
+
+/**
+ * Toggle Batch Member active status
+ */
+export const toggleBatchMemberStatus = async (id: string, is_active: boolean) => {
+  const { error } = await supabase
+    .from("batch_members")
+    .update({ is_active, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw error;
+};
+
+/**
+ * Delete a Batch Member
+ */
+export const deleteBatchMember = async (id: string) => {
+  const { error } = await supabase
+    .from("batch_members")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+};
+
 

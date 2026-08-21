@@ -192,6 +192,13 @@ export default function AdminDashboard() {
             />
 
             <DashboardCard
+              icon={GraduationCap}
+              title="Batch Members"
+              description="Manage academic batches, assign specific members, coordinators & roles"
+              link="/admin/batch-members"
+            />
+
+            <DashboardCard
               icon={MessageSquare}
               title="Forum"
               description="Moderate announcements, discussions & posts"

@@ -12,6 +12,7 @@ import Events from "./pages/Events";
 import Gallery from "./pages/Gallery";
 import Forum from "./pages/Forum";
 import ExecutiveMembers from "./pages/ExecutiveMembers";
+import BatchMembers from "./pages/BatchMembers";
 import Alumni from "./pages/Alumni";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -30,6 +31,7 @@ import EditHome from "./admin/EditHome";
 import EditAbout from "./admin/EditAbout";
 import AdminAddTeam from "./admin/AdminAddTeam";
 import AdminExecutiveMembers from "./admin/AdminExecutiveMembers";
+import AdminBatchMembers from "./admin/AdminBatchMembers";
 import MembershipSettings from "./admin/MembershipSettings";
 import ResetPassword from "./admin/ResetPassword";
 
@@ -52,6 +54,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/executive-members" element={<ExecutiveMembers />} />
+          <Route path="/batch-members" element={<BatchMembers />} />
           <Route path="/alumni" element={<Alumni />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/events" element={<Events />} />
@@ -91,6 +94,16 @@ const App = () => (
             element={
               <AdminGuard>
                 <AdminExecutiveMembers />
+              </AdminGuard>
+            }
+          />
+
+          {/* BATCH MEMBERS MANAGEMENT */}
+          <Route
+            path="/admin/batch-members"
+            element={
+              <AdminGuard>
+                <AdminBatchMembers />
               </AdminGuard>
             }
           />

@@ -18,14 +18,20 @@ const UpcomingEventsSection = () => {
 
   if (isLoading) return null;
 
-  // Filter out past events
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Filter out past events strictly using local calendar date
+  const todayString = (() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  })();
 
   const upcomingEvents = events
     .filter((event) => {
-      const eventDate = new Date(event.event_date);
-      return eventDate >= today;
+      if (!event.event_date) return false;
+      const datePart = event.event_date.split("T")[0].trim();
+      return datePart >= todayString;
     })
     .sort(
       (a, b) =>

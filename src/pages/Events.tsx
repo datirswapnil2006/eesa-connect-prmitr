@@ -38,11 +38,18 @@ export default function Events() {
   const [loading, setLoading] = useState(true);
   const [loadingMorePast, setLoadingMorePast] = useState(false);
 
+  // Helper for local calendar date
+  const getTodayDateString = (): string => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
   // Fetch upcoming events (small dataset, load all)
   const fetchUpcoming = async () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayString = today.toISOString().split("T")[0];
+    const todayString = getTodayDateString();
 
     const { data } = await supabase
       .from("events")
@@ -51,14 +58,16 @@ export default function Events() {
       .gte("event_date", todayString)
       .order("event_date", { ascending: true });
 
-    return (data || []) as Event[];
+    return ((data || []) as Event[]).filter((e) => {
+      if (!e.event_date) return false;
+      const datePart = e.event_date.split("T")[0].trim();
+      return datePart >= todayString;
+    });
   };
 
   // Fetch a page of past events
   const fetchPastPage = async (page: number) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayString = today.toISOString().split("T")[0];
+    const todayString = getTodayDateString();
 
     const from = page * PAST_PAGE_SIZE;
     const to = from + PAST_PAGE_SIZE - 1;
